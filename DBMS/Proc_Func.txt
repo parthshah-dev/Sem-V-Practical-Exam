@@ -1,0 +1,63 @@
+-- Create Table
+CREATE TABLE Student (
+    RollNo NUMBER PRIMARY KEY,
+    Name   VARCHAR2(30),
+    Marks  NUMBER,
+    Category VARCHAR2(20)
+);
+
+-- Insert Sample Data
+INSERT INTO Student VALUES (1, 'Rahul', 85, NULL);
+INSERT INTO Student VALUES (2, 'Sneha', 72, NULL);
+INSERT INTO Student VALUES (3, 'Amit', 55, NULL);
+INSERT INTO Student VALUES (4, 'Priya', 40, NULL);
+COMMIT;
+
+-- ==========================================================
+-- Stored Function: Returns Category based on Marks
+-- ==========================================================
+CREATE OR REPLACE FUNCTION GetCategory(v_marks NUMBER)
+RETURN VARCHAR2
+IS
+    v_category VARCHAR2(20);
+BEGIN
+    IF v_marks >= 75 THEN
+        v_category := 'Distinction';
+    ELSIF v_marks >= 60 THEN
+        v_category := 'First Class';
+    ELSIF v_marks >= 50 THEN
+        v_category := 'Second Class';
+    ELSE
+        v_category := 'Fail';
+    END IF;
+
+    RETURN v_category;
+END;
+/
+
+-- ==========================================================
+-- Stored Procedure: Updates Student Category using Function
+-- ==========================================================
+CREATE OR REPLACE PROCEDURE UpdateCategory IS
+BEGIN
+    FOR rec IN (SELECT RollNo, Marks FROM Student) LOOP
+        UPDATE Student
+        SET Category = GetCategory(rec.Marks)
+        WHERE RollNo = rec.RollNo;
+    END LOOP;
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Student categories updated successfully.');
+END;
+/
+
+-- ==========================================================
+-- Execute Procedure
+-- ==========================================================
+BEGIN
+    UpdateCategory;
+END;
+/
+
+-- View Results
+SELECT * FROM Student;

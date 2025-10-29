@@ -1,0 +1,83 @@
+1. Create Sample Tables
+CREATE TABLE Student (
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    CourseID INT
+);
+
+CREATE TABLE Course (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(50)
+);
+
+-- Insert some data
+INSERT INTO Student VALUES (1, 'Rahul', 101);
+INSERT INTO Student VALUES (2, 'Sneha', 102);
+INSERT INTO Student VALUES (3, 'Amit', 101);
+INSERT INTO Course VALUES (101, 'Computer Science');
+INSERT INTO Course VALUES (102, 'Information Tech');
+INSERT INTO Course VALUES (103, 'Electronics');
+
+2. Types of JOINS
+a) INNER JOIN
+
+Returns rows that have matching values in both tables.
+
+SELECT Student.Name, Course.CourseName
+FROM Student
+INNER JOIN Course
+ON Student.CourseID = Course.CourseID;
+
+b) LEFT JOIN
+
+Returns all students and their course names, even if no course matches.
+
+SELECT Student.Name, Course.CourseName
+FROM Student
+LEFT JOIN Course
+ON Student.CourseID = Course.CourseID;
+
+c) RIGHT JOIN
+
+Returns all courses, even if no student has taken that course.
+
+SELECT Student.Name, Course.CourseName
+FROM Student
+RIGHT JOIN Course
+ON Student.CourseID = Course.CourseID;
+
+d) FULL JOIN
+
+Returns all records when there is a match in either table (not supported in all SQL systems, but conceptually):
+
+SELECT Student.Name, Course.CourseName
+FROM Student
+FULL OUTER JOIN Course
+ON Student.CourseID = Course.CourseID;
+
+3. Subquery Example
+
+Find students enrolled in the same course as “Sneha”:
+
+SELECT Name 
+FROM Student
+WHERE CourseID = (
+    SELECT CourseID 
+    FROM Student 
+    WHERE Name = 'Sneha'
+);
+
+4. VIEW Example
+
+Create a view showing student names with their course names.
+
+CREATE VIEW StudentCourseView AS
+SELECT Student.Name, Course.CourseName
+FROM Student
+INNER JOIN Course
+ON Student.CourseID = Course.CourseID;
+
+
+To see data from the view:
+
+SELECT * FROM StudentCourseView;
