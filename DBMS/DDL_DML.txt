@@ -1,0 +1,46 @@
+1. DDL (Data Definition Language)
+
+These commands define the structure of the database.
+
+-- Create database
+CREATE DATABASE StudentDB;
+
+-- Use the database
+USE StudentDB;
+
+-- Create table
+CREATE TABLE Student (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Age INT,
+    Course VARCHAR(30)
+);
+
+-- Add a new column
+ALTER TABLE Student ADD Email VARCHAR(50);
+
+-- Delete a column
+ALTER TABLE Student DROP COLUMN Email;
+
+-- Delete the table
+-- DROP TABLE Student;
+
+2. DML (Data Manipulation Language)
+
+These commands are used to insert, update, delete, and view data.
+
+-- Insert records
+INSERT INTO Student (RollNo, Name, Age, Course)
+VALUES (1, 'Rahul', 20, 'Computer Science');
+
+INSERT INTO Student (RollNo, Name, Age, Course)
+VALUES (2, 'Sneha', 21, 'Information Tech');
+
+-- Retrieve data
+SELECT * FROM Student;
+
+-- Update record
+UPDATE Student SET Age = 22 WHERE RollNo = 2;
+
+-- Delete record
+DELETE FROM Student WHERE RollNo = 1;
