@@ -121,12 +121,12 @@ class Pass1_Assembler {
                             IC.add("(AD," + info.opcode + ") (C," + op1 + ")");
                         } else if (opcode.equals("END")) {
                             for (Literal lit : LITTAB) {
-    if (lit.address == -1) {
-        lit.address = LC;
-        LC++;
-    }
-}
-IC.add("(AD," + info.opcode + ")");
+                                if (lit.address == -1) {
+                                    lit.address = LC;
+                                    LC++;
+                                }
+                            }
+                            IC.add("(AD," + info.opcode + ")");
 
                         }
                         break;
@@ -209,3 +209,66 @@ IC.add("(AD," + info.opcode + ")");
         }
     }
 }
+
+
+
+
+/*
+
+Theory: Pass 1 Assembler
+
+The Pass 1 of an assembler reads the assembly program and generates:
+
+The symbol table (SYMTAB) with symbols and their addresses.
+
+The literal table (LITTAB) containing literals and their assigned addresses.
+
+The pool table (POOLTAB) to mark literal groups.
+
+The intermediate code (IC), which represents the machine instructions in symbolic form.
+
+In this pass:
+
+The location counter (LC) is updated for each statement.
+
+Labels, symbols, and literals are stored but not yet replaced with actual machine addresses.
+
+The OPTAB (operation table) is used to identify the type and opcode of each mnemonic.
+
+No machine code is generated in Pass 1 — only symbolic intermediate code.
+
+⚙️ Algorithm: Pass 1 Assembler
+
+Start.
+
+Initialize tables: OPTAB, REGTAB, SYMTAB, LITTAB, POOLTAB.
+
+Set LC = 0 (Location Counter).
+
+Read each line of the assembly program.
+
+If a label is present, add it to SYMTAB with current LC.
+
+Identify opcode type using OPTAB:
+
+    - Assembler Directive (AD): Handle START, END, LTORG, etc.
+
+    - Imperative Statement (IS): Handle instructions like MOVER, ADD, etc.
+
+    - Declarative Statement (DL): Handle data definitions like DC, DS.
+
+For operands:
+
+    - If symbol, add or update SYMTAB.
+
+    - If literal, add to LITTAB (address assigned later).
+
+Generate corresponding Intermediate Code (IC) entry.
+
+After END or LTORG, assign addresses to unallocated literals.
+
+Print IC, SYMTAB, LITTAB, and POOLTAB.
+
+Stop.
+
+ */

@@ -160,3 +160,134 @@ public class CPUScheduling {
         System.out.printf("Average Turnaround Time = %.2f\n", totalTAT / p.length);
     }
 }
+
+
+/*
+
+🧠 Theory
+
+CPU Scheduling is the process of deciding which process will use the CPU next when multiple processes are waiting. The aim is to maximize CPU utilization and minimize waiting and turnaround times.
+
+This program implements four CPU scheduling algorithms:
+
+First Come First Serve (FCFS) – Processes are executed in the order they arrive.
+
+Shortest Job First (SJF – Preemptive) – The process with the smallest remaining burst time runs next.
+
+Priority Scheduling (Non-Preemptive) – The process with the highest priority (lowest number) runs first.
+
+Round Robin (RR) – Each process gets a fixed time quantum. If unfinished, it’s placed at the end of the queue.
+
+Key Terms:
+
+Arrival Time (AT) – Time when the process enters the ready queue.
+
+Burst Time (BT) – Total CPU time required by the process.
+
+Waiting Time (WT) – Time spent waiting in the ready queue.
+
+Turnaround Time (TAT) – Total time from arrival to completion (TAT = WT + BT).
+
+⚙️ Algorithm
+
+🧩 1. FCFS (First Come First Serve)
+Algorithm
+
+Start.
+
+Input number of processes and their Arrival Time (AT) and Burst Time (BT).
+
+Sort all processes in increasing order of Arrival Time.
+
+For each process:
+
+    - Calculate Waiting Time (WT) = (Start Time − Arrival Time).
+
+    - Calculate Turnaround Time (TAT) = WT + BT.
+
+Compute average WT and TAT.
+
+Display results.
+
+Stop.
+
+⚙️ 2. SJF (Shortest Job First – Preemptive)
+Algorithm
+
+Start.
+
+Input number of processes and their Arrival Time (AT) and Burst Time (BT).
+
+Initialize current time = 0 and remaining time = BT for all processes.
+
+While all processes are not completed:
+
+    - Select the process with the shortest remaining time among those that have arrived.
+
+    - Execute it for 1 time unit.
+
+    - Update remaining time and current time.
+
+    - If a process finishes, calculate WT and TAT.
+
+Compute average WT and TAT.
+
+Display results.
+
+Stop.
+
+🧠 3. Priority Scheduling (Non-Preemptive)
+Algorithm
+
+Start.
+
+Input number of processes and their Arrival Time (AT), Burst Time (BT), and Priority.
+
+Initialize current time = 0.
+
+While all processes are not completed:
+
+    - From the processes that have arrived, select the one with the highest priority (lowest priority number).
+
+    - Execute it completely.
+
+    - Calculate WT = Start Time − Arrival Time.
+
+    - Calculate TAT = WT + BT.
+
+Compute average WT and TAT.
+
+Display results.
+
+Stop.
+
+🔁 4. Round Robin Scheduling
+Algorithm
+
+Start.
+
+Input number of processes and their Arrival Time (AT) and Burst Time (BT).
+
+Input Time Quantum (TQ).
+
+Initialize ready queue and current time = 0.
+
+While ready queue is not empty:
+
+    - Select the first process in queue.
+
+    - Execute it for min(Remaining Time, TQ).
+
+    - Update current time and remaining time.
+
+    - If the process is not finished, re-add it to the queue.
+
+    - If finished, calculate WT and TAT.
+
+Compute average WT and TAT.
+
+Display results.
+
+Stop.
+
+ */

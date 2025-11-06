@@ -43,3 +43,58 @@ except KeyboardInterrupt:
 finally:
     GPIO.cleanup()
     print("GPIO cleanup done. Exiting safely.")
+
+
+
+
+'''
+Theory: Object Detection using IR Sensor and Raspberry Pi
+
+An Infrared (IR) sensor detects objects based on the reflection of infrared light.
+It has two parts:
+
+    IR Transmitter (LED): Emits infrared light.
+
+    IR Receiver (Photodiode): Detects reflected IR light from nearby objects.
+
+When an object comes in front of the sensor, IR light is reflected and the receiver outputs a LOW signal, indicating object detection.
+
+In this project:
+
+    The IR sensor is connected to a GPIO input pin.
+
+    An LED connected to another GPIO pin acts as a visual indicator.
+
+    The program continuously checks the sensor’s output and lights up the LED whenever an object is detected.
+
+⚙️ Algorithm
+
+Start.
+
+Import RPi.GPIO and time modules.
+
+Define GPIO pins for IR sensor and LED.
+
+Set GPIO mode to BCM and configure:
+
+    - Sensor pin as INPUT with pull-up resistor.
+
+    - LED pin as OUTPUT (initially LOW).
+
+Initialize object count to 0.
+
+Continuously monitor the IR sensor:
+
+    - If sensor output is LOW, object is detected.
+
+    - Increment count and display it.
+
+    - Turn ON LED for 0.5 seconds, then turn it OFF.
+
+    - Wait briefly to avoid duplicate counts.
+
+On user interrupt (Ctrl+C), clean up GPIO pins and exit safely.
+
+Stop.
+
+'''

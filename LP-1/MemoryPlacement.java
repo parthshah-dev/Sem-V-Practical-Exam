@@ -122,3 +122,111 @@ public class MemoryPlacement {
         }
     }
 }
+
+
+
+
+/*
+
+🧠 Theory: Memory Placement Strategies
+
+When multiple processes request memory, the operating system must decide where to place each process in the available memory blocks.
+The goal is to reduce internal and external fragmentation and improve memory utilization.
+
+The four main strategies are:
+
+First Fit – Allocate the first available block that is large enough.
+
+Best Fit – Allocate the smallest available block that fits the process.
+
+Worst Fit – Allocate the largest available block to reduce fragmentation.
+
+Next Fit – Similar to First Fit, but continues searching from where the last allocation left off.
+
+⚙️ 1. First Fit
+Algorithm
+
+Start.
+
+Input number of memory blocks and their sizes.
+
+Input number of processes and their sizes.
+
+For each process:
+
+    - Scan blocks from the beginning.
+
+    - Allocate the first block that fits.
+
+    - Reduce that block’s size.
+
+If no suitable block is found, mark process as “Not Allocated”.
+
+Display allocation table.
+
+Stop.
+
+🧩 2. Best Fit
+Algorithm
+
+Start.
+
+Input memory block and process sizes.
+
+For each process:
+
+    - Find the block with the minimum leftover space that can fit the process.
+
+    - Allocate that block and reduce its size.
+
+If no suitable block exists, mark as “Not Allocated”.
+
+Display allocation table.
+
+Stop.
+
+💡 3. Worst Fit
+Algorithm
+
+Start.
+
+Input memory block and process sizes.
+
+For each process:
+
+    - Find the block with the maximum leftover space that can fit the process.
+
+    - Allocate that block and reduce its size.
+
+If no suitable block exists, mark as “Not Allocated”.
+
+Display allocation table.
+
+Stop.
+
+
+🔁 4. Next Fit
+Algorithm
+
+Start.
+
+Input block and process sizes.
+
+Maintain a pointer to the last allocated block.
+
+For each process:
+
+    - Start searching from the last position.
+
+    - Allocate the first block found that fits.
+
+    - Update the pointer for the next search.
+
+If no block fits, mark as “Not Allocated”.
+
+Display allocation table.
+
+Stop.
+
+
+ */

@@ -1,0 +1,107 @@
+Step 1: Java Program (MathJNI.java)
+
+class MathJNI {
+    public native int addNumbers(int a, int b);
+
+    static {
+        System.loadLibrary("MathLib");
+    }
+
+    public static void main(String[] args) {
+        MathJNI obj = new MathJNI();
+        int result = obj.addNumbers(10, 20);
+        System.out.println("Addition result = " + result);
+    }
+}
+
+
+Step 2: Generate C Header File
+
+javac -h . MathJNI.java
+
+
+Step 3: C Code (MathLib.c)
+
+#include <jni.h>
+#include "MathJNI.h"
+
+JNIEXPORT jint JNICALL Java_MathJNI_addNumbers(JNIEnv *env, jobject obj, jint a, jint b) {
+    return a + b;
+}
+
+
+Step 4: Compile C file to shared library (.so)
+
+gcc -shared -fpic -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -o libMathLib.so MathLib.c
+
+
+Step 5: Run Java program
+
+java -Djava.library.path=. MathJNI
+
+
+Expected Output
+
+Addition result = 30
+
+
+Final Folder Structure
+
+MathJNI.java
+MathJNI.h
+MathLib.c
+libMathLib.so
+
+
+
+
+🧩 Theory:
+
+A Dynamic Link Library (DLL) (or .so file in Linux) contains compiled functions that can be loaded and executed at runtime by other programs.
+The Java Native Interface (JNI) allows Java code to call native methods written in C or C++.
+
+Steps involved:
+
+    1. Declare native methods in Java using the native keyword.
+
+    2. Compile the Java file to generate a header file (.h).
+
+    3. Implement the native function in C/C++ using the JNI conventions.
+
+    4. Compile the C code to create a shared library (.dll on Windows / .so on Linux).
+
+    5. Load the library in Java using System.loadLibrary().
+
+    6. Execute the native function from Java.
+
+⚙️ Algorithm:
+
+1. Start.
+
+2. Create a Java class (MathJNI.java) with a native function addNumbers(int a, int b).
+
+3. Compile the Java file and generate a C header file using:
+
+    javac -h . MathJNI.java
+
+
+4. Write the C implementation (MathLib.c) of the native function:
+
+    JNIEXPORT jint JNICALL Java_MathJNI_addNumbers(JNIEnv *env, jobject obj, jint a, jint b) {
+        return a + b;
+    }
+
+
+5. Compile the C file to a shared library:
+
+    gcc -shared -fpic -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -o libMathLib.so MathLib.c
+
+
+6. Run the Java program to load and call the native function:
+
+    java -Djava.library.path=. MathJNI
+
+
+7. Display the result.
+
+8. Stop.

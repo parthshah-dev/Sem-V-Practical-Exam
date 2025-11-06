@@ -24,3 +24,26 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error occurred while inserting data.');
 END;
 /
+
+
+
+Theory: PL/SQL Program to Calculate and Store Area of Circle
+
+This program demonstrates the use of PL/SQL loops, variables, and DML operations in Oracle.
+
+A table named areas is created with two columns: radius and area. In the PL/SQL block, two variables are declared to hold the radius and calculated area. The program uses a FOR loop to iterate through radius values from 5 to 9. For each value, the area of a circle is calculated using the formula:
+
+Area
+=
+3.14
+×
+radius
+×
+radius
+Area=3.14×radius×radius
+
+Each calculated value is inserted into the areas table using the INSERT INTO statement, and a message is printed using DBMS_OUTPUT.PUT_LINE. After all insertions, the transaction is saved with COMMIT.
+
+The EXCEPTION section handles any unexpected errors during execution.
+
+This program shows how PL/SQL can perform calculations, manipulate data, and handle exceptions within a single block.

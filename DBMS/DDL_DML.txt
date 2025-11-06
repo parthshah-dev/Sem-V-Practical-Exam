@@ -44,3 +44,37 @@ UPDATE Student SET Age = 22 WHERE RollNo = 2;
 
 -- Delete record
 DELETE FROM Student WHERE RollNo = 1;
+
+
+
+Theory: DDL and DML Commands in SQL
+
+This program demonstrates the use of DDL (Data Definition Language) and DML (Data Manipulation Language) commands in SQL.
+
+1. DDL (Data Definition Language):
+DDL commands are used to define and modify the structure of a database and its objects such as tables.
+Common DDL commands include:
+
+CREATE: Used to create a new database or table.
+
+ALTER: Used to modify an existing table by adding or removing columns.
+
+DROP: Used to delete a table or database permanently.
+
+In this program, a database named StudentDB and a table Student are created. The ALTER TABLE command is used to add and drop the Email column.
+
+2. DML (Data Manipulation Language):
+DML commands are used to manage the data stored inside database tables.
+Common DML commands include:
+
+INSERT: Adds new records to a table.
+
+SELECT: Retrieves data from a table.
+
+UPDATE: Modifies existing records.
+
+DELETE: Removes specific records from a table.
+
+Here, student details are inserted, updated, and deleted from the Student table using DML commands.
+
+This program shows how DDL defines the structure of the database, while DML operates on the data within that structure.

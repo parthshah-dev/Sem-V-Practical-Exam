@@ -108,3 +108,30 @@ COMMIT;
 ------------------------------------------------------------
 SELECT * FROM Library;
 SELECT * FROM Library_Audit;
+
+
+
+Theory: Database Triggers
+
+A trigger is a special type of stored procedure in SQL or PL/SQL that is automatically executed in response to certain events on a table, such as INSERT, UPDATE, or DELETE. Triggers are mainly used to maintain data consistency, enforce business rules, and perform automatic auditing of changes in a database.
+
+Triggers can be classified as:
+
+    - Before Triggers: Execute before the triggering event occurs. They are often used for validation or modification of data before it is committed.
+
+    - After Triggers: Execute after the triggering event. They are generally used for logging or auditing changes made to a table.
+
+    - Row-Level Triggers: Execute once for each row affected by the triggering statement.
+
+    - Statement-Level Triggers: Execute once for the entire SQL statement, regardless of the number of rows affected.
+
+Typical applications of triggers include:
+
+    - Automatically maintaining audit trails of data changes.
+
+    - Enforcing complex business rules that cannot be handled by constraints.
+
+    - Synchronizing related tables or maintaining backup records.
+
+Example:
+A trigger on a Library table can be used to automatically record updates or deletions in a separate Library_Audit table, helping track all modifications made to the original data.

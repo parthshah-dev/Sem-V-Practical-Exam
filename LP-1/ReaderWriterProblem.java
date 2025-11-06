@@ -74,3 +74,85 @@ class ReaderWriterProblem {
         r3.start();
     }
 }
+
+
+/*
+
+🧠 Theory: Reader–Writer Problem
+
+The Reader–Writer Problem deals with synchronizing access to a shared resource (like a file or database) where:
+
+Readers only read and do not modify the data.
+
+Writers modify the shared data.
+
+Goal:
+To allow multiple readers to access the resource simultaneously while ensuring only one writer can modify it at a time, and no reader reads while a writer is writing.
+
+This program uses two semaphores:
+
+mutex → ensures mutual exclusion when modifying readCount.
+
+wrt → ensures exclusive access to the shared resource for writers.
+
+Rules enforced:
+
+First reader locks out writers.
+
+Last reader unlocks writers.
+
+Writers always get exclusive access.
+
+⚙️ Algorithm: Reader–Writer Problem (Semaphore Solution)
+Initialization
+
+1. Initialize semaphores:
+
+    - mutex = 1
+
+    - wrt = 1
+
+2. Set readCount = 0.
+
+Reader Process
+
+1. Entry Section:
+
+    - Acquire mutex.
+
+    - Increment readCount.
+
+    - If this is the first reader, acquire wrt (blocks writers).
+
+    - Release mutex.
+
+2. Critical Section:
+
+    - Read the shared data.
+
+3. Exit Section:
+
+    - Acquire mutex.
+
+    - Decrement readCount.
+
+    - If this is the last reader, release wrt (writers can proceed).
+
+    - Release mutex.
+
+Writer Process
+
+1. Entry Section:
+
+    - Acquire wrt for exclusive access.
+
+Critical Section:
+
+    - Modify the shared data.
+
+Exit Section:
+
+    - Release wrt.
+
+
+ */

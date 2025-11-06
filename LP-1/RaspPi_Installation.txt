@@ -1,0 +1,109 @@
+Theory:
+
+The Raspberry Pi is a low-cost, credit-card-sized single-board computer that supports a variety of operating systems. These operating systems are lightweight, optimized for ARM processors, and designed for educational, embedded, or IoT purposes.
+
+Common Operating Systems for Raspberry Pi:
+
+    1. Raspberry Pi OS (formerly Raspbian):
+
+        - Official and most commonly used OS.
+
+        - Based on Debian Linux.
+
+        - Comes with programming tools (Python, Scratch, etc.) and a GUI.
+
+    2. Ubuntu / Ubuntu Server:
+
+        - Full-featured Linux distribution suitable for desktop and server use.
+
+        - Popular for IoT and development projects.
+
+    3. Kali Linux:
+
+        - Designed for penetration testing and cybersecurity.
+
+        - Used for ethical hacking and network analysis.
+
+    4. LibreELEC / OSMC:
+
+        - Media center OS for playing videos, music, and streaming.
+
+        - Based on Kodi platform.
+
+    5. Windows 10 IoT Core:
+
+        - Lightweight version of Windows designed for embedded systems and IoT devices.
+
+    6. RetroPie:
+
+        - OS for retro gaming emulation.
+
+        - Converts Raspberry Pi into a gaming console.
+
+Process of OS Installation on Raspberry Pi:
+Step 1: Download OS Image
+
+    - Visit the official Raspberry Pi website:
+    https://www.raspberrypi.com/software/
+
+    - Download the Raspberry Pi Imager tool.
+
+Step 2: Prepare the SD Card
+
+    - Insert a microSD card (8GB or larger) into your computer using a card reader.
+
+    - Open Raspberry Pi Imager.
+
+    - Select:
+
+        + Choose OS: (e.g., Raspberry Pi OS)
+
+        + Choose Storage: select your microSD card.
+
+Step 3: Write OS to SD Card
+
+    - Click Write to flash the OS image onto the SD card.
+
+    - Wait for the process to complete.
+
+    - Safely eject the SD card after flashing.
+
+Step 4: Setup Raspberry Pi
+
+    - Insert the SD card into the Raspberry Pi.
+
+    - Connect:
+
+        + Monitor (HDMI)
+
+        + Keyboard and Mouse (USB)
+
+        + Power supply (5V/2.5A)
+
+        + Optional: Ethernet cable or Wi-Fi dongle
+
+Step 5: Boot and Configure
+
+    - Power on the Raspberry Pi.
+
+    - The system boots into the selected OS.
+
+    - Complete the initial setup:
+
+        + Set language and keyboard.
+
+        + Configure Wi-Fi.
+
+        + Update software if needed.
+
+
+
+Advantages of Raspberry Pi OS Installation:
+
+    - Easy to install and use.
+
+    - Supports multiple operating systems.
+
+    - Ideal for learning Linux, Python, IoT, and hardware interfacing.
+
+    - Portable and cost-effective computing platform.

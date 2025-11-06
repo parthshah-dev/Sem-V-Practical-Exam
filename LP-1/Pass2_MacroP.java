@@ -113,3 +113,51 @@ class Pass2MacroP {
     }
 }
       
+
+
+/*
+
+
+Theory: Pass 2 of Macro Processor
+
+The Pass 2 of the macro processor is responsible for macro expansion — replacing macro calls in the program with their actual sequence of instructions from the MDT (Macro Definition Table).
+
+In this pass:
+
+The MNT (Macro Name Table) is used to locate each macro definition in the MDT.
+
+The ALA (Argument List Array) maps formal parameters to actual arguments used in the macro call.
+
+The MDT provides the macro body, where positional parameters (#0, #1, etc.) are substituted with actual arguments.
+
+The expanded code replaces the macro call in the intermediate code.
+
+Goal: To generate a fully expanded source program ready for the assembler.
+
+⚙️ Algorithm: Pass 2 of Macro Processor
+
+Start.
+
+Read MNT, MDT, ALA, and Intermediate Code (IC) from Pass 1 output.
+
+For each line in the intermediate code:
+
+    - If the line contains a macro name, find its entry in MNT.
+
+    - Retrieve the macro body starting at the corresponding index in MDT.
+
+    - Use ALA to substitute actual arguments for positional parameters (#0, #1, etc.).
+
+    - Write the expanded macro body to the output program.
+
+    - Skip the MEND marker.
+
+    - If the line is not a macro call, copy it directly to the output.
+
+Continue until all lines in intermediate code are processed.
+
+Display the fully expanded program.
+
+Stop.
+
+ */

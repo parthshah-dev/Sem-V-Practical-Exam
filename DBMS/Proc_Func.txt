@@ -61,3 +61,33 @@ END;
 
 -- View Results
 SELECT * FROM Student;
+
+
+
+Theory: PL/SQL Stored Function and Procedure
+
+A stored function and a stored procedure are reusable subprograms in PL/SQL that help modularize and simplify database operations. They allow logical processing, calculations, and data manipulation directly within the database.
+
+    1. Stored Function:
+    A function is a PL/SQL block that performs a specific task and returns a single value.
+
+        - It accepts parameters as input and always returns a result using the RETURN statement.
+
+        - Functions are often used for computations, validations, or deriving values.
+
+        - They can be called inside SQL queries, other PL/SQL blocks, or within stored procedures.
+
+    2. Stored Procedure:
+    A procedure is a PL/SQL block that performs one or more actions but does not return a value directly.
+
+        - It can accept parameters and use DML operations like INSERT, UPDATE, and DELETE.
+
+        - Procedures are used for executing business logic, automating repetitive tasks, or performing batch updates.
+
+        - They can be called from an anonymous block or another procedure.
+
+Difference:
+
+A function must return a value, while a procedure may or may not.
+
+Functions are generally used for calculations, whereas procedures are used to execute actions.

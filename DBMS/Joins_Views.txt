@@ -81,3 +81,40 @@ ON Student.CourseID = Course.CourseID;
 To see data from the view:
 
 SELECT * FROM StudentCourseView;
+
+
+
+Theory: SQL Joins, Subqueries, and Views
+
+This program demonstrates how Joins, Subqueries, and Views are used in SQL to retrieve and manage related data efficiently from multiple tables.
+
+1. Joins
+
+A join is used to combine rows from two or more tables based on a related column between them.
+
+    - INNER JOIN:
+        Returns only the rows that have matching values in both tables. It is the most common type of join.
+
+    - LEFT JOIN (LEFT OUTER JOIN):
+        Returns all rows from the left table and the matching rows from the right table. Unmatched rows from the right table show as NULL.
+
+    - RIGHT JOIN (RIGHT OUTER JOIN):
+        Returns all rows from the right table and the matching rows from the left table. Unmatched rows from the left table show as NULL.
+
+    - FULL JOIN (FULL OUTER JOIN):
+        Returns all records from both tables, with NULL in places where there is no match. (Some databases like MySQL may not support it directly.)
+
+These joins help in retrieving related data across multiple tables such as student names with their respective course names.
+
+2. Subquery
+
+A subquery is a query written inside another query. It allows data to be retrieved conditionally, based on the result of another query.
+
+Subqueries are often used for comparisons, filtering data, or performing operations like finding maximum, minimum, or matching records across related tables
+
+3. View
+
+A view is a virtual table created using a SQL query. It does not store data physically but displays data from one or more tables.
+The CREATE VIEW statement defines a view, and it can be queried like a normal table.
+
+Views simplify complex queries, improve security by restricting direct table access, and help in reusing frequently used queries.

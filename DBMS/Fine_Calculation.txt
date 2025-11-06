@@ -74,3 +74,29 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
+
+
+
+Theory: PL/SQL Program for Library Fine Calculation and Book Return
+
+This program is used to calculate the library fine based on the number of days a book is kept after issue and to update the return status of the book. It demonstrates the use of conditional statements, date functions, DML operations, and exception handling in PL/SQL.
+
+Two tables are created:
+
+    - Borrower – stores details of issued books such as roll number, book name, date of issue, and status (Issued/Returned).
+
+    - Fine – stores fine details for late returns including roll number, fine date, and amount.
+
+When the user enters a roll number and book name, the program retrieves the issue date and calculates the number of days the book was kept using SYSDATE - DateofIssue. Based on the number of days, the fine is calculated as:
+
+    - No fine if returned within 15 days
+
+    - ₹5 per day for 16–30 days
+
+    - ₹50 per day beyond 30 days
+
+The borrower’s status is updated to 'R' for returned, and if a fine exists, it is recorded in the Fine table.
+
+The program also includes exception handling using NO_DATA_FOUND to handle invalid input and OTHERS to catch general errors.
+
+This PL/SQL program effectively shows how business logic and calculations can be automated using procedural features in SQL.

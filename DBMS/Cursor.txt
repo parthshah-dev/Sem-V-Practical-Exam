@@ -135,3 +135,23 @@ END;
 /
 
 SELECT RollNo, Name, Status FROM O_RollCall ORDER BY RollNo;
+
+
+
+Theory: PL/SQL Program Using Different Types of Cursors
+
+This program demonstrates the use of implicit, explicit, FOR, and parameterized cursors in PL/SQL to perform data manipulation and control row-by-row processing.
+
+A cursor in PL/SQL acts as a pointer to the result set of a query. It allows records to be accessed and processed one at a time.
+
+Implicit Cursor:
+Created automatically by Oracle when a DML statement like INSERT, UPDATE, or DELETE is executed. In this program, it is used to insert one new record from the N_RollCall table into the O_RollCall table.
+
+Explicit Cursor:
+Declared and managed by the programmer using OPEN, FETCH, and CLOSE statements. It allows row-by-row fetching of data and inserting it into another table.
+
+Cursor FOR Loop:
+A simpler way to process explicit cursors automatically. The opening, fetching, and closing of the cursor are handled by the loop itself.
+
+Parameterized Cursor:
+A cursor that accepts parameters at runtime. It is used to fetch and process data conditionally based on a given parameter (for example, RollNo in this program).

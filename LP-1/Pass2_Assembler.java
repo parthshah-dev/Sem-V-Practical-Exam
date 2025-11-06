@@ -92,3 +92,60 @@ public class Pass2_Assembler {
         }
     }
 }
+
+
+/*
+
+🧠 Theory: Pass 2 Assembler
+
+The second pass of an assembler uses the output of Pass 1 to generate the actual machine code.
+
+Input: Intermediate Code (IC), Symbol Table, Literal Table.
+
+Output: Final Machine Code.
+
+Objective: Replace symbolic addresses and literals with their actual memory locations.
+
+During Pass 2:
+
+Assembler directives (AD) are ignored since they were handled in Pass 1.
+
+Imperative statements (IS) are converted to machine code using the opcode, register code, and actual addresses of symbols/literals.
+
+Declarative statements (DL) allocate memory and initialize data.
+
+The location counter (LC) is updated for each instruction.
+
+⚙️ Algorithm: Pass 2 Assembler
+
+Start.
+
+Read SYMTAB, LITTAB, and Intermediate Code (IC) from Pass 1 output.
+
+Initialize LC = 0.
+
+For each line in IC:
+
+    - If it contains an Assembler Directive (AD) → skip.
+
+    - If it contains an Imperative Statement (IS):
+
+        + Extract opcode, register code, and operand.
+
+        + Replace symbols/literals with their actual addresses from SYMTAB/LITTAB.
+
+        + Print corresponding machine code instruction.
+
+        + Increment LC.
+
+    - If it contains a Declarative Statement (DL):
+
+        + Assign the constant value to memory.
+
+        + Increment LC.
+
+Continue until the entire IC is processed.
+
+Stop.
+
+ */

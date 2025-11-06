@@ -107,3 +107,64 @@ public class Pass1_MacroP {
         pass1.printTables();
     }
 }
+
+
+
+/*
+
+
+Theory: Pass 1 of Macro Processor
+
+A macro is a sequence of instructions represented by a name and parameterized for reuse.
+The Macro Processor replaces macro calls with the corresponding sequence of statements defined in the macro body.
+
+In Pass 1, the macro processor:
+
+Identifies macro definitions (MACRO … MEND).
+
+Stores macro information in three main tables:
+
+MNT (Macro Name Table) — stores the macro name and its starting index in MDT.
+
+MDT (Macro Definition Table) — stores the macro body with formal parameters replaced by positional notation.
+
+ALA (Argument List Array) — maps formal parameters (&ARG) to positional symbols (#0, #1, etc.).
+
+Produces intermediate code, which excludes macro definitions but keeps macro calls intact for Pass 2.
+
+Purpose:
+To prepare data structures that allow Pass 2 to expand macros efficiently.
+
+⚙️ Algorithm: Pass 1 of Macro Processor
+
+Start.
+
+Initialize MNT, MDT, ALA, and an intermediate code list.
+
+Read each line of the source program sequentially.
+
+If the line contains MACRO:
+
+    - Read the next line as macro header.
+
+    - Extract macro name and parameters.
+
+    - Add macro name and current MDT index to MNT.
+
+    - Create an ALA entry mapping each parameter (&ARG) to positional notation (#i).
+
+    - Read each subsequent line until MEND:
+
+        + Replace formal parameters with their positional symbols.
+
+        + Add each line to MDT.
+
+    - Add MEND to MDT.
+
+If the line is not within a macro definition, add it to intermediate code.
+
+After reading the full source, print MNT, MDT, ALA, and intermediate code.
+
+Stop.
+
+ */
