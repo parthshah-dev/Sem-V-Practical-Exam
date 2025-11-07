@@ -119,7 +119,7 @@ public class CPUScheduling {
     // ---------- Round Robin (Preemptive) ----------
     static void roundRobin(Process p[], int tq) {
         Queue<Process> q = new LinkedList<>();
-        int time = 0, completed = 0;
+        int time = 0;
         Arrays.sort(p, Comparator.comparingInt(a -> a.at));
         q.add(p[0]);
         int idx = 1;
@@ -138,7 +138,6 @@ public class CPUScheduling {
             if (cur.rt > 0)
                 q.add(cur);
             else {
-                completed++;
                 cur.tat = time - cur.at;
                 cur.wt = cur.tat - cur.bt;
             }
