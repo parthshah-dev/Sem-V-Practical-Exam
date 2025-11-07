@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Pass2MacroP {
+class Pass2_MacroP {
 
     static class MNTEntry {
         String name;
