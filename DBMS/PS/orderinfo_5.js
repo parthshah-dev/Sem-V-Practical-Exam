@@ -1,0 +1,198 @@
+// =====================================================
+// MongoDB Practical: Order Information Collection
+// =====================================================
+
+// Step 1: Use or Create Database
+use SalesDB;
+
+// Step 2: Drop old collection if it exists
+db.orderinfo.drop();
+
+// Step 3: Insert Sample Documents
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "B", price: 400 },
+  { cust_id: 125, cust_name: "abc", status: "A", price: 300 },
+  { cust_id: 126, cust_name: "pqr", status: "C", price: 450 },
+  { cust_id: 127, cust_name: "xyz", status: "B", price: 600 },
+  { cust_id: 128, cust_name: "abc", status: "A", price: 500 }
+]);
+
+print("\n✅ Documents Inserted Successfully!\n");
+
+// =====================================================
+// (i) Find the total price for each customer and display in order of total price
+// =====================================================
+print("🔹 Total price for each customer:");
+db.orderinfo.aggregate([
+  { $group: { _id: "$cust_name", totalPrice: { $sum: "$price" } } },
+  { $sort: { totalPrice: 1 } }
+]).forEach(printjson);
+
+// =====================================================
+// (ii) Display average price for each customer grouped by status
+// =====================================================
+print("\n🔹 Average price for each customer grouped by status:");
+db.orderinfo.aggregate([
+  { $group: { _id: "$status", avgPrice: { $avg: "$price" } } },
+  { $sort: { _id: 1 } }
+]).forEach(printjson);
+
+// =====================================================
+// (iii) Create simple index on orderinfo collection
+// =====================================================
+print("\n🔹 Creating simple index on 'cust_name' field:");
+db.orderinfo.createIndex({ cust_name: 1 });
+
+// View created indexes
+print("\n🔹 Current Indexes:");
+printjson(db.orderinfo.getIndexes());
+
+// =====================================================
+// (iv) Create complex (compound) index and drop duplicates
+// =====================================================
+print("\n🔹 Creating complex index on (cust_id, status):");
+db.orderinfo.createIndex({ cust_id: 1, status: 1 }, { unique: true });
+
+// Verify index creation
+print("\n🔹 Current Indexes after complex index creation:");
+printjson(db.orderinfo.getIndexes());
+
+// =====================================================
+// Remove duplicate documents (if any)
+// =====================================================
+print("\n🔹 Checking and removing duplicates based on (cust_id, status):");
+db.orderinfo.aggregate([
+  { $group: { _id: { cust_id: "$cust_id", status: "$status" }, count: { $sum: 1 }, ids: { $push: "$_id" } } },
+  { $match: { count: { $gt: 1 } } }
+]).forEach(function(doc) {
+  doc.ids.shift(); // Keep one document
+  db.orderinfo.deleteMany({ _id: { $in: doc.ids } });
+});
+print("✅ Duplicates (if any) removed successfully!\n");
+
+// =====================================================
+// Query using the complex index
+// =====================================================
+print("🔹 Query using compound index (cust_id=123, status='A'):");
+db.orderinfo.find({ cust_id: 123, status: "A" }).pretty();
+
+// =====================================================
+// ✅ END OF PROGRAM
+// =====================================================
+print("\n=== ✅ MongoDB Orderinfo Indexing and Aggregation Example Completed Successfully ===\n");
+
+
+
+/*
+
+Practical: MongoDB Order Information Example (Indexing and Aggregation)
+
+Theory:
+This program demonstrates how MongoDB handles data aggregation and indexing for optimized query performance. The $group operator is used to perform aggregation tasks like calculating total and average prices based on customer names or statuses. Sorting is achieved through $sort to arrange results in ascending order. MongoDB also allows the creation of indexes, which significantly speed up data retrieval operations. A simple index (on one field) and a compound index (on multiple fields) are created here. Duplicates are identified and removed using the aggregation framework combined with a deletion loop. Together, these operations show how MongoDB efficiently manages, summarizes, and optimizes data access.
+
+Syntax Used
+// Aggregation for sum or average
+db.collection.aggregate([
+  { $group: { _id: "$field", result: { $sum: "$numericField" } } },
+  { $sort: { result: 1 } }
+]);
+
+// Create a simple index
+db.collection.createIndex({ field: 1 });
+
+// Create a compound (complex) index
+db.collection.createIndex({ field1: 1, field2: 1 }, { unique: true });
+
+// Find duplicates and remove them
+db.collection.aggregate([
+  { $group: { _id: { field1: "$field1", field2: "$field2" }, count: { $sum: 1 }, ids: { $push: "$_id" } } },
+  { $match: { count: { $gt: 1 } } }
+]);
+
+Input Collection
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "B", price: 400 },
+  { cust_id: 125, cust_name: "abc", status: "A", price: 300 },
+  { cust_id: 126, cust_name: "pqr", status: "C", price: 450 },
+  { cust_id: 127, cust_name: "xyz", status: "B", price: 600 },
+  { cust_id: 128, cust_name: "abc", status: "A", price: 500 }
+]);
+
+(i) Find total price for each customer and display in order of total price
+Input Query
+db.orderinfo.aggregate([
+  { $group: { _id: "$cust_name", totalPrice: { $sum: "$price" } } },
+  { $sort: { totalPrice: 1 } }
+]);
+
+Output
+{ "_id": "pqr", "totalPrice": 450 }
+{ "_id": "xyz", "totalPrice": 1000 }
+{ "_id": "abc", "totalPrice": 1050 }
+
+(ii) Display average price for each customer grouped by status
+Input Query
+db.orderinfo.aggregate([
+  { $group: { _id: "$status", avgPrice: { $avg: "$price" } } },
+  { $sort: { _id: 1 } }
+]);
+
+Output
+{ "_id": "A", "avgPrice": 350 }
+{ "_id": "B", "avgPrice": 500 }
+{ "_id": "C", "avgPrice": 450 }
+
+(iii) Create a simple index on the cust_name field
+Input Query
+db.orderinfo.createIndex({ cust_name: 1 });
+
+Output
+"cust_name_1"
+
+
+View Created Indexes
+
+db.orderinfo.getIndexes();
+
+
+Output Example:
+
+[
+  { "v": 2, "key": { "_id": 1 }, "name": "_id_" },
+  { "v": 2, "key": { "cust_name": 1 }, "name": "cust_name_1" }
+]
+
+(iv) Create complex (compound) index and remove duplicates
+Input Query
+db.orderinfo.createIndex({ cust_id: 1, status: 1 }, { unique: true });
+
+Output
+"cust_id_1_status_1"
+
+
+Duplicate Removal Query
+
+db.orderinfo.aggregate([
+  { $group: { _id: { cust_id: "$cust_id", status: "$status" }, count: { $sum: 1 }, ids: { $push: "$_id" } } },
+  { $match: { count: { $gt: 1 } } }
+]).forEach(function(doc) {
+  doc.ids.shift();
+  db.orderinfo.deleteMany({ _id: { $in: doc.ids } });
+});
+
+
+Output:
+
+✅ Duplicates (if any) removed successfully!
+
+(v) Query using the compound index
+Input Query
+db.orderinfo.find({ cust_id: 123, status: "A" }).pretty();
+
+Output
+{ "cust_id": 123, "cust_name": "abc", "status": "A", "price": 250 }
+
+
+*/

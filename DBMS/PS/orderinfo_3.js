@@ -1,0 +1,193 @@
+// =====================================================
+// MongoDB Order Information Example
+// =====================================================
+
+// Step 1: Use or Create Database
+use SalesDB;
+
+// Step 2: Drop Old Collection (Optional)
+db.orderinfo.drop();
+
+// Step 3: Insert Sample Documents
+db.orderinfo.insertMany([
+  { cust_id: 101, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 102, cust_name: "xyz", status: "B", price: 450 },
+  { cust_id: 103, cust_name: "pqr", status: "A", price: 300 },
+  { cust_id: 104, cust_name: "lmn", status: "C", price: 800 },
+  { cust_id: 105, cust_name: "rst", status: "B", price: 600 }
+]);
+
+print("\n✅ Documents Inserted Successfully!\n");
+
+// =====================================================
+// (i) Add “Age” field to the orderinfo collection
+// =====================================================
+print("🔹 Adding 'Age' field to all customers...");
+db.orderinfo.updateMany({}, { $set: { age: 25 } });
+print("✅ Field Added Successfully!\n");
+
+// Verify
+db.orderinfo.find().pretty();
+
+// =====================================================
+// (ii) Create a complex index and remove duplicates
+// =====================================================
+print("\n🔹 Creating Complex Index on (cust_id, status)...");
+db.orderinfo.createIndex({ cust_id: 1, status: 1 }, { unique: true });
+
+// View Indexes
+print("\n🔹 Current Indexes:");
+printjson(db.orderinfo.getIndexes());
+
+// Example query using the complex index
+print("\n🔹 Query using complex index (cust_id: 101, status: 'A'):");
+db.orderinfo.find({ cust_id: 101, status: "A" }).pretty();
+
+// Drop duplicates (if any)
+print("\n🔹 Removing duplicates (if present):");
+db.orderinfo.aggregate([
+  { $group: { _id: { cust_id: "$cust_id", status: "$status" }, count: { $sum: 1 }, ids: { $push: "$_id" } } },
+  { $match: { count: { $gt: 1 } } }
+]).forEach(function(doc) {
+  doc.ids.shift(); // keep one document
+  db.orderinfo.deleteMany({ _id: { $in: doc.ids } });
+});
+print("✅ Duplicates Removed (if any)!\n");
+
+// =====================================================
+// (iii) Display average price for each customer group by status
+// =====================================================
+print("🔹 Average price for each group by status:");
+db.orderinfo.aggregate([
+  { $group: { _id: "$status", avgPrice: { $avg: "$price" } } },
+  { $sort: { _id: 1 } }
+]).forEach(printjson);
+
+// =====================================================
+// (iv) Change the customer's name whose status is “B”
+// =====================================================
+print("\n🔹 Changing customer name where status = 'B':");
+db.orderinfo.updateMany(
+  { status: "B" },
+  { $set: { cust_name: "Updated_Customer" } }
+);
+print("✅ Customer Names Updated!\n");
+
+// Verify final collection
+db.orderinfo.find().pretty();
+
+// =====================================================
+// ✅ END OF PROGRAM
+// =====================================================
+print("\n=== ✅ MongoDB Orderinfo (Index, Update, Aggregation) Example Completed Successfully ===\n");
+
+
+/*
+
+Practical: MongoDB Order Information Example (Index, Update, Aggregation)
+
+Theory:
+This program demonstrates several advanced MongoDB operations including field updates, index creation, duplicate removal, and aggregation. The updateMany() command adds a new field (age) to all documents, showing MongoDB’s flexibility in modifying schemas dynamically. A composite index (on cust_id and status) is created to improve query performance on multiple fields and to enforce uniqueness if specified. The $group stage in the aggregation framework calculates the average price per status, while updateMany() again is used to modify data conditionally. These operations represent efficient ways to manage, optimize, and query data in MongoDB.
+
+Syntax Used
+// Add new field
+db.collection.updateMany({}, { $set: { fieldName: value } });
+
+// Create composite index
+db.collection.createIndex({ field1: 1, field2: 1 }, { unique: true });
+
+// Group and find average
+db.collection.aggregate([
+  { $group: { _id: "$field", avgValue: { $avg: "$numericField" } } }
+]);
+
+// Update conditionally
+db.collection.updateMany({ condition }, { $set: { field: newValue } });
+
+Input Collection
+db.orderinfo.insertMany([
+  { cust_id: 101, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 102, cust_name: "xyz", status: "B", price: 450 },
+  { cust_id: 103, cust_name: "pqr", status: "A", price: 300 },
+  { cust_id: 104, cust_name: "lmn", status: "C", price: 800 },
+  { cust_id: 105, cust_name: "rst", status: "B", price: 600 }
+]);
+
+(i) Add “Age” field to the orderinfo collection
+Input Query
+db.orderinfo.updateMany({}, { $set: { age: 25 } });
+
+Output
+{ "acknowledged": true, "matchedCount": 5, "modifiedCount": 5 }
+
+
+Resulting Documents:
+
+{ "cust_id": 101, "cust_name": "abc", "status": "A", "price": 250, "age": 25 }
+{ "cust_id": 102, "cust_name": "xyz", "status": "B", "price": 450, "age": 25 }
+...
+
+(ii) Create a complex index and remove duplicates
+Input Query
+db.orderinfo.createIndex({ cust_id: 1, status: 1 }, { unique: true });
+
+Output
+{
+  "createdCollectionAutomatically": false,
+  "numIndexesBefore": 1,
+  "numIndexesAfter": 2,
+  "ok": 1
+}
+
+
+View Indexes
+
+db.orderinfo.getIndexes();
+
+
+Output Example:
+
+[
+  { "v": 2, "key": { "_id": 1 }, "name": "_id_" },
+  { "v": 2, "key": { "cust_id": 1, "status": 1 }, "name": "cust_id_1_status_1", "unique": true }
+]
+
+
+Query Using Complex Index
+
+db.orderinfo.find({ cust_id: 101, status: "A" }).pretty();
+
+
+Output
+
+{ "cust_id": 101, "cust_name": "abc", "status": "A", "price": 250, "age": 25 }
+
+(iii) Display average price for each customer group by status
+Input Query
+db.orderinfo.aggregate([
+  { $group: { _id: "$status", avgPrice: { $avg: "$price" } } },
+  { $sort: { _id: 1 } }
+]);
+
+Output
+{ "_id": "A", "avgPrice": 275 }
+{ "_id": "B", "avgPrice": 525 }
+{ "_id": "C", "avgPrice": 800 }
+
+(iv) Change the customer's name whose status is “B”
+Input Query
+db.orderinfo.updateMany(
+  { status: "B" },
+  { $set: { cust_name: "Updated_Customer" } }
+);
+
+Output
+{ "acknowledged": true, "matchedCount": 2, "modifiedCount": 2 }
+
+
+Updated Documents:
+
+{ "cust_id": 102, "cust_name": "Updated_Customer", "status": "B", "price": 450, "age": 25 }
+{ "cust_id": 105, "cust_name": "Updated_Customer", "status": "B", "price": 600, "age": 25 }
+
+*/

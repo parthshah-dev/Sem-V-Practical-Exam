@@ -1,0 +1,216 @@
+-- =====================================================
+-- MySQL Practical: University Tables
+-- =====================================================
+
+-- Step 1: Create and Use Database
+CREATE DATABASE UniversityDB;
+USE UniversityDB;
+
+-- Step 2: Create Tables
+CREATE TABLE teaches (
+    T_ID INT,
+    course_id VARCHAR(10),
+    sec_id INT,
+    semester VARCHAR(10),
+    year INT
+);
+
+CREATE TABLE student (
+    S_ID INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    tot_cred INT
+);
+
+CREATE TABLE instructor (
+    T_ID INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course (
+    course_id VARCHAR(10) PRIMARY KEY,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+-- Step 3: Insert Sample Data
+INSERT INTO instructor VALUES 
+(101, 'Dr. Mehta', 'CSE', 90000),
+(102, 'Dr. Roy', 'IT', 85000),
+(103, 'Dr. Sharma', 'CSE', 95000);
+
+INSERT INTO teaches VALUES 
+(101, 'CS101', 1, 'Fall', 2023),
+(102, 'IT202', 1, 'Spring', 2024),
+(103, 'CS105', 1, 'Fall', 2023),
+(101, 'CS106', 2, 'Spring', 2024);
+
+INSERT INTO student VALUES
+(1, 'Ravi', 'CSE', 120),
+(2, 'Neha', 'IT', 100),
+(3, 'Amit', NULL, 90);
+
+-- =====================================================
+-- (i) Find the names of instructors who taught courses semester-wise
+-- =====================================================
+SELECT i.name AS Instructor_Name, 
+       t.course_id, 
+       t.semester, 
+       t.year
+FROM instructor i
+JOIN teaches t ON i.T_ID = t.T_ID
+ORDER BY t.semester, t.year;
+
+-- =====================================================
+-- (ii) Create a View on student table for student details
+-- =====================================================
+CREATE VIEW student_view AS
+SELECT S_ID, name, dept_name, tot_cred
+FROM student;
+
+-- Display view
+SELECT * FROM student_view;
+
+-- =====================================================
+-- (iii) Rename column from dept_name to department_name
+-- =====================================================
+ALTER TABLE student 
+CHANGE dept_name department_name VARCHAR(50);
+
+-- Verify structure
+DESC student;
+
+-- =====================================================
+-- (iv) Delete student whose department is NULL
+-- =====================================================
+DELETE FROM student 
+WHERE department_name IS NULL;
+
+-- Verify final data
+SELECT * FROM student;
+
+-- =====================================================
+-- ✅ END OF PROGRAM
+-- =====================================================
+
+
+/*
+Practical: MySQL University Database Example
+
+Theory:
+This practical demonstrates how to create and manage a relational database in MySQL using the University schema. It covers the creation of multiple related tables (instructor, student, course, teaches), insertion of records, use of JOIN for retrieving related data, creation of views, and modification of table structures using ALTER TABLE. It also includes data manipulation operations such as DELETE for removing unwanted records. These operations form the core of relational database management, ensuring data consistency, reusability, and better organization in academic or business environments.
+
+Step 1: Database Creation
+CREATE DATABASE UniversityDB;
+USE UniversityDB;
+
+Step 2: Table Creation
+CREATE TABLE teaches (
+    T_ID INT,
+    course_id VARCHAR(10),
+    sec_id INT,
+    semester VARCHAR(10),
+    year INT
+);
+
+CREATE TABLE student (
+    S_ID INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    tot_cred INT
+);
+
+CREATE TABLE instructor (
+    T_ID INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course (
+    course_id VARCHAR(10) PRIMARY KEY,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+Step 3: Insert Sample Data
+INSERT INTO instructor VALUES 
+(101, 'Dr. Mehta', 'CSE', 90000),
+(102, 'Dr. Roy', 'IT', 85000),
+(103, 'Dr. Sharma', 'CSE', 95000);
+
+INSERT INTO teaches VALUES 
+(101, 'CS101', 1, 'Fall', 2023),
+(102, 'IT202', 1, 'Spring', 2024),
+(103, 'CS105', 1, 'Fall', 2023),
+(101, 'CS106', 2, 'Spring', 2024);
+
+INSERT INTO student VALUES
+(1, 'Ravi', 'CSE', 120),
+(2, 'Neha', 'IT', 100),
+(3, 'Amit', NULL, 90);
+
+(i) Find the names of instructors who taught courses semester-wise
+Query
+SELECT i.name AS Instructor_Name, 
+       t.course_id, 
+       t.semester, 
+       t.year
+FROM instructor i
+JOIN teaches t ON i.T_ID = t.T_ID
+ORDER BY t.semester, t.year;
+
+Output
+Instructor_Name	course_id	semester	year
+Dr. Mehta	CS101	Fall	2023
+Dr. Sharma	CS105	Fall	2023
+Dr. Roy	IT202	Spring	2024
+Dr. Mehta	CS106	Spring	2024
+(ii) Create a View on student table for student details
+Query
+CREATE VIEW student_view AS
+SELECT S_ID, name, dept_name, tot_cred
+FROM student;
+
+Display View
+SELECT * FROM student_view;
+
+Output
+S_ID	name	dept_name	tot_cred
+1	Ravi	CSE	120
+2	Neha	IT	100
+3	Amit	NULL	90
+(iii) Rename column from dept_name to department_name
+Query
+ALTER TABLE student 
+CHANGE dept_name department_name VARCHAR(50);
+
+Verification
+DESC student;
+
+Output
+Field	Type	Null	Key	Default	Extra
+S_ID	int	NO	PRI	NULL	
+name	varchar(50)	YES		NULL	
+department_name	varchar(50)	YES		NULL	
+tot_cred	int	YES		NULL	
+(iv) Delete student whose department is NULL
+Query
+DELETE FROM student 
+WHERE department_name IS NULL;
+
+Output
+Query OK, 1 row affected
+
+Final Student Table
+SELECT * FROM student;
+
+S_ID	name	department_name	tot_cred
+1	Ravi	CSE	120
+2	Neha	IT	100
+
+*/
