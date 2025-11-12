@@ -1,0 +1,167 @@
+Question -
+Write a PL/SQL block to implement database trigger on Library Table.
+
+========================= Answer ================================
+Stepwise Execution with Code
+
+Step 1: Start SQL*Plus
+
+sqlplus username/password@database
+
+
+Step 2: Create Tables
+
+-- Main Library table
+CREATE TABLE Library (
+    BookID NUMBER PRIMARY KEY,
+    Title VARCHAR2(100),
+    Author VARCHAR2(50),
+    Price NUMBER(10,2)
+);
+
+-- Audit table
+CREATE TABLE Library_Audit (
+    AuditID NUMBER PRIMARY KEY,
+    BookID NUMBER,
+    Title VARCHAR2(100),
+    Author VARCHAR2(50),
+    Price NUMBER(10,2),
+    ActionType VARCHAR2(20)
+);
+
+Step 3: Insert Sample Data into Library Table
+
+INSERT ALL
+    INTO Library VALUES (101, 'Database Systems', 'C. J. Date', 450)
+    INTO Library VALUES (102, 'Oracle PL/SQL', 'Steven Feuerstein', 500)
+    INTO Library VALUES (103, 'Java Programming', 'Herbert Schildt', 400)
+SELECT * FROM dual;
+
+COMMIT;
+
+
+Step 4: PL/SQL Block – Create Sequence and Triggers
+============================================
+SET SERVEROUTPUT ON;
+SET VERIFY OFF;
+
+-- Drop existing objects if already present
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TRIGGER before_update_library'; EXCEPTION WHEN OTHERS THEN NULL; END;
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TRIGGER after_update_library'; EXCEPTION WHEN OTHERS THEN NULL; END;
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TRIGGER before_delete_library'; EXCEPTION WHEN OTHERS THEN NULL; END;
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TRIGGER after_delete_library'; EXCEPTION WHEN OTHERS THEN NULL; END;
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE Audit_seq'; EXCEPTION WHEN OTHERS THEN NULL; END;
+
+-- Create Sequence for AuditID
+CREATE SEQUENCE Audit_seq START WITH 1 INCREMENT BY 1;
+
+-- Trigger before UPDATE
+CREATE OR REPLACE TRIGGER before_update_library
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'BEFORE UPDATE');
+END;
+/
+
+-- Trigger after UPDATE
+CREATE OR REPLACE TRIGGER after_update_library
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :NEW.BookID, :NEW.Title, :NEW.Author, :NEW.Price, 'AFTER UPDATE');
+END;
+/
+
+-- Trigger before DELETE
+CREATE OR REPLACE TRIGGER before_delete_library
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'BEFORE DELETE');
+END;
+/
+
+-- Trigger after DELETE
+CREATE OR REPLACE TRIGGER after_delete_library
+AFTER DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'AFTER DELETE');
+END;
+/
+============================================================
+Step 5: Test the Triggers
+-- Update a record
+UPDATE Library SET Price = 550 WHERE BookID = 102;
+-- Delete a record
+DELETE FROM Library WHERE BookID = 103;
+COMMIT;
+
+Step 6: Verify Audit Table
+SELECT * FROM Library_Audit ORDER BY AuditID;
+
+Step 7: Commit Changes
+COMMIT;
+
+Step 8: Exit SQL*Plus
+----------------------------------------------------------
+
+Database Triggers – Theory
+
+Definition:
+A trigger is a PL/SQL block that automatically executes in response to a specified event on a table or view. Triggers are used to enforce business rules, maintain audit trails, and implement complex integrity constraints.
+
+Types of Triggers:
+DML Triggers: Execute in response to INSERT, UPDATE, DELETE operations.
+  BEFORE Trigger: Executes before the DML operation. Useful for validation or modifying data.
+  AFTER Trigger: Executes after the DML operation. Useful for logging or auditing changes.
+Row-Level vs Statement-Level:
+  Row-Level (FOR EACH ROW): Executes once for each row affected.
+  Statement-Level: Executes once per SQL statement regardless of affected rows.
+
+Key Features:
+Triggers cannot be called explicitly; they fire automatically.
+They can reference :OLD (previous value) and :NEW (new value) pseudorecords in row-level triggers.
+Triggers can perform operations on other tables, e.g., audit tables.
+Can include sequences to generate unique IDs for audit logging.
+
+Advantages:
+Enforces data integrity and business rules automatically.
+Provides an audit trail of database operations.
+Reduces the need for repetitive application-level code.
+Ensures consistency even when multiple applications access the database.
+
+Syntax (Basic Example):
+CREATE OR REPLACE TRIGGER trigger_name
+BEFORE | AFTER INSERT | UPDATE | DELETE
+ON table_name
+FOR EACH ROW
+BEGIN
+    -- PL/SQL statements
+END;
+/
+
+Example in Practice:
+In the Library system:
+Before Update Trigger: Records old book details in Library_Audit before modification.
+After Update Trigger: Records new book details after modification.
+Before Delete Trigger: Logs book data before deletion.
+After Delete Trigger: Logs book data after deletion.
+
+Execution Flow:
+User updates or deletes a record in Library.
+Row-level triggers fire automatically, inserting audit data in Library_Audit.
+A sequence (Audit_seq) generates unique AuditID for each log.
+The database maintains a complete history of changes without manual intervention.
+
+EXIT;

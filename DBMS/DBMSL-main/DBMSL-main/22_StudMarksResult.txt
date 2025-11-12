@@ -1,0 +1,139 @@
+Question:
+Write a Stored Procedure namely proc_Grade for the categorization of students.
+If marks scored by students in examination are <=1500 and >=990, the student will be placed in Distinction category.
+If marks scored are between 989 and 900, category is First Class.
+If marks are between 899 and 825, category is Higher Second Class.
+Write a PL/SQL block using the procedure created.
+
+Tables:
+Stud_Marks(rollno, name, total_marks)
+Result(Roll, Name, Class)
+
+=============== Answer ==================
+Stepwise Execution with Code
+Step 1: Start SQL*Plus
+sqlplus username/password@database
+
+Step 2: Create Required Tables
+-- Student Marks Table
+CREATE TABLE Stud_Marks (
+    rollno NUMBER PRIMARY KEY,
+    name VARCHAR2(50),
+    total_marks NUMBER
+);
+
+-- Result Table
+CREATE TABLE Result (
+    roll NUMBER PRIMARY KEY,
+    name VARCHAR2(50),
+    class VARCHAR2(30)
+);
+
+Step 3: Insert Sample Data
+INSERT ALL
+    INTO Stud_Marks VALUES (101, 'Rahul', 1200)
+    INTO Stud_Marks VALUES (102, 'Amit', 950)
+    INTO Stud_Marks VALUES (103, 'Neha', 870)
+    INTO Stud_Marks VALUES (104, 'Suresh', 1000)
+SELECT * FROM dual;
+
+COMMIT;
+
+Step 4: Create Stored Procedure proc_Grade.sql 
+---------------------------------------------
+-- Create and execute procedure in one go
+BEGIN
+    -- Drop procedure if exists (optional)
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP PROCEDURE proc_Grade';
+    EXCEPTION
+        WHEN OTHERS THEN NULL;
+    END;
+
+    -- Create procedure
+    EXECUTE IMMEDIATE '
+    CREATE OR REPLACE PROCEDURE proc_Grade IS
+        v_roll Stud_Marks.rollno%TYPE;
+        v_name Stud_Marks.name%TYPE;
+        v_marks Stud_Marks.total_marks%TYPE;
+        v_class VARCHAR2(30);
+
+        CURSOR c_students IS
+            SELECT rollno, name, total_marks FROM Stud_Marks;
+    BEGIN
+        OPEN c_students;
+        LOOP
+            FETCH c_students INTO v_roll, v_name, v_marks;
+            EXIT WHEN c_students%NOTFOUND;
+
+            IF v_marks >= 990 AND v_marks <= 1500 THEN
+                v_class := ''Distinction'';
+            ELSIF v_marks >= 900 AND v_marks <= 989 THEN
+                v_class := ''First Class'';
+            ELSIF v_marks >= 825 AND v_marks <= 899 THEN
+                v_class := ''Higher Second Class'';
+            ELSE
+                v_class := ''No Class'';
+            END IF;
+
+            INSERT INTO Result(Roll, Name, Class)
+            VALUES(v_roll, v_name, v_class);
+        END LOOP;
+        CLOSE c_students;
+        COMMIT;
+    END;';
+    
+    -- Execute procedure
+    proc_Grade;
+    
+    DBMS_OUTPUT.PUT_LINE('Procedure executed successfully.');
+END;
+/
+---------------------------------------------
+
+Step 6: Verify Results
+SELECT * FROM Result ORDER BY roll;
+
+Expected Output:
+Roll	Name	Class
+101	Rahul	Distinction
+102	Amit	First Class
+103	Neha	Higher Second Class
+104	Suresh	Distinction
+
+====================================Theory==============================
+PL/SQL & Stored Procedure – One Page
+PL/SQL:
+Oracle’s procedural extension of SQL; allows variables, loops, conditions, and exception handling for database operations.
+Syntax:
+DECLARE
+   -- variables
+BEGIN
+   -- logic
+EXCEPTION
+   -- handle errors
+END;
+
+Stored Procedure:
+A named PL/SQL block stored in the database for reuse; executes multiple statements together.
+Syntax:
+CREATE OR REPLACE PROCEDURE proc_name IS
+BEGIN
+   -- logic
+END proc_name;
+
+Advantages: Modular, reusable, improves performance, and enhances security.
+
+Cursor:
+A pointer to query result rows used for row-by-row processing in PL/SQL.
+Syntax:
+CURSOR c_name IS SELECT col1, col2 FROM table;
+OPEN c_name;
+FETCH c_name INTO var1, var2;
+CLOSE c_name;
+
+Program Explanation:
+Procedure proc_Grade reads student marks using an explicit cursor.
+Classifies marks into Distinction, First Class, or Higher Second Class and inserts into Result table.
+
+============================================================================

@@ -1,0 +1,155 @@
+Question:
+Collection schema (Perform on MySQL Terminal)
+teaches(T_ID, course_id, sec_id, semester, year)
+student(S_ID, name, dept_name, tot_cred)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Find the names of the instructor in the university who have taught the courses semester-wise.
+ii. Create View on single table which retrieves student details.
+iii. Rename the column of table student from dept_name to department_name.
+iv. Delete student name whose department is NULL.
+
+============ Execurion -
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE university;
+USE university;
+
+Step 3: Create Tables
+CREATE TABLE teaches(
+    T_ID INT,
+    course_id INT,
+    sec_id INT,
+    semester VARCHAR(10),
+    year YEAR
+);
+
+CREATE TABLE student(
+    S_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    tot_cred INT
+);
+
+CREATE TABLE instructor(
+    T_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course(
+    course_id INT,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+Step 4: Insert Sample Data
+INSERT INTO instructor VALUES (101, 'Dr. Smith', 'CSE', 50000);
+INSERT INTO instructor VALUES (102, 'Dr. John', 'IT', 45000);
+INSERT INTO instructor VALUES (103, 'Dr. Mary', 'CSE', 40000);
+
+INSERT INTO student VALUES (1, 'Alice', 'CSE', 120);
+INSERT INTO student VALUES (2, 'Bob', 'IT', 100);
+INSERT INTO student VALUES (3, 'Charlie', NULL, 80);
+
+INSERT INTO teaches VALUES (101, 201, 1, 'Fall', 2023);
+INSERT INTO teaches VALUES (102, 202, 1, 'Spring', 2023);
+INSERT INTO teaches VALUES (103, 201, 2, 'Fall', 2023);
+
+-- Insert multiple instructors
+INSERT INTO instructor (T_ID, name, dept_name, salary) VALUES
+(101, 'Dr. Smith', 'CSE', 50000),
+(102, 'Dr. John', 'IT', 45000),
+(103, 'Dr. Mary', 'CSE', 40000);
+
+-- Insert multiple students
+INSERT INTO student (S_ID, name, dept_name, tot_cred) VALUES
+(1, 'Alice', 'CSE', 120),
+(2, 'Bob', 'IT', 100),
+(3, 'Charlie', NULL, 80);
+
+-- Insert multiple courses
+INSERT INTO course (course_id, title, dept_name, credits) VALUES
+(201, 'DBMS', 'CSE', 4),
+(202, 'Networking', 'IT', 3),
+(203, 'Algorithms', 'CSE', 4);
+
+-- Insert multiple teaches records
+INSERT INTO teaches (T_ID, course_id, sec_id, semester, year) VALUES
+(101, 201, 1, 'Fall', 2023),
+(102, 202, 1, 'Spring', 2023),
+(103, 201, 2, 'Fall', 2023);
+
+Query Execution and Answers
+i. Find names of instructors semester-wise
+SELECT i.name, t.semester
+FROM instructor i
+JOIN teaches t ON i.T_ID = t.T_ID
+ORDER BY t.semester;
+
+ii. Create View on student table
+CREATE VIEW student_view AS
+SELECT * FROM student;
+SELECT * FROM student_view;
+
+iii. Rename column dept_name to department_name
+ALTER TABLE student
+CHANGE COLUMN dept_name department_name VARCHAR(50);
+SELECT * FROM student;
+
+iv. Delete student whose department is NULL
+DELETE FROM student
+WHERE department_name IS NULL;
+SELECT * FROM student;
+
+---------------
+Theory -
+What is MySQL
+MySQL is an open-source relational database management system (RDBMS) that stores structured data in tables and allows performing queries, updates, and transactions using SQL commands.
+
+Practical Related Concepts
+1. Views:
+A view is a virtual table based on the result of a query.
+It simplifies complex queries and provides controlled access to data.
+Syntax:
+CREATE VIEW view_name AS SELECT column1, column2 FROM table_name;
+
+2. JOINs:
+Combine data from multiple tables based on related columns.
+Syntax:
+SELECT columns FROM table1 JOIN table2 ON table1.column = table2.column;
+
+3. ALTER TABLE (Rename Column):
+Used to modify table structure, such as renaming columns.
+Syntax:
+ALTER TABLE table_name CHANGE COLUMN old_name new_name datatype;
+
+4. DELETE Statement:
+Removes rows from a table based on a condition.
+Syntax:
+DELETE FROM table_name WHERE condition;
+
+5. ORDER BY Clause:
+Sorts the query result based on one or more columns.
+Syntax:
+SELECT * FROM table_name ORDER BY column ASC|DESC;
+
+6. NULL Handling:
+SQL uses IS NULL or IS NOT NULL to filter records containing null values.
+Syntax:
+SELECT * FROM table_name WHERE column IS NULL;
+------------
+(
+Explanation
+JOIN with instructor and teaches allows retrieving instructor names along with the semester they taught.
+View creation (student_view) enables simplified access to student details without querying the table directly.
+Column rename updates dept_name to department_name to make it more readable.
+DELETE operation removes all records where department_name is NULL, maintaining data integrity.
+ORDER BY ensures semester-wise organization, and proper JOIN ensures semester-specific retrieval.
+This practical demonstrates table relationships, filtering, data modification, view creation, and handling NULL values effectively in MySQL.
+)

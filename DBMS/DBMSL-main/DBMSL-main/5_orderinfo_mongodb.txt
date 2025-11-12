@@ -1,0 +1,93 @@
+Question
+Collection “orderinfo” which contains documents:
+{
+  cust_id: 123,
+  cust_name: "abc",
+  status: "A",
+  price: 250
+}
+Perform the following:
+i. Find the average price for each customer having status 'A'
+ii. Display the status of the customers whose price lies between 100 and 1000
+iii. Display the customers’ information without “_id”
+iv. Create a simple index on orderinfo collection and explain its impact
+
+=========== MongoDB Practical Answer
+mongosh
+use salesdb
+db.createCollection("orderinfo")
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "A", price: 450 },
+  { cust_id: 125, cust_name: "pqr", status: "B", price: 900 },
+  { cust_id: 126, cust_name: "mno", status: "A", price: 150 }
+])
+
+i. Average price for each customer having status 'A'
+db.orderinfo.aggregate([
+  { $match: { status: "A" } },
+  { $group: { _id: "$cust_name", avg_price: { $avg: "$price" } } }
+])
+
+ii. Display status of customers whose price lies between 100 and 1000
+db.orderinfo.find(
+  { price: { $gte: 100, $lte: 1000 } },
+  { cust_name: 1, status: 1, price: 1, _id: 0 }
+)
+
+iii. Display customer information without “_id”
+db.orderinfo.find({}, { _id: 0 })
+
+iv. Create and check index
+db.orderinfo.createIndex({ cust_name: 1 })
+db.orderinfo.getIndexes()
+db.orderinfo.find({ cust_name: "abc" }).explain("executionStats")
+
+--------------
+Theory
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It supports fast querying, aggregation, and deletion of documents using collections instead of traditional tables.
+
+Aggregation:
+Aggregation in MongoDB is used to process and analyze multiple documents and return computed results like averages, sums, or counts. It works similarly to SQL’s GROUP BY clause.
+Syntax:
+db.collection.aggregate([
+  { $group: { _id: <expression>, result_field: { <accumulator>: "$field" } } }
+])
+
+Comparison Operators:
+These operators are used to filter documents based on conditions.
+$gte: Greater than or equal to
+$lte: Less than or equal to
+Syntax:
+db.collection.find({ field: { $gte: value1, $lte: value2 } })
+
+Projection:
+Projection specifies which fields to include or exclude from the query results. Setting _id: 0 removes the _id field.
+Syntax:
+db.collection.find({}, { field1: 1, field2: 1, _id: 0 })
+
+Indexing in MongoDB:
+An index is a special data structure that improves query performance by allowing faster access to documents without scanning the entire collection.
+-Syntax:
+db.collection.createIndex({ field: 1 })
+-Impact:
+Before Index: MongoDB performs a collection scan, checking every document (slow performance).
+After Index: MongoDB uses the index to quickly locate matching documents (faster performance).
+-Difference:
+Before indexing, queries are slower but storage usage is minimal. After indexing, queries are much faster but require slightly more storage space for index maintenance.
+---------------
+
+(
+1. db.orderinfo.aggregate([{ $match: { status: "A" } }, { $group: { _id: "$cust_name", avg_price: { $avg: "$price" } } }])
+→ Filters documents where status is “A” and then groups them by cust_name to calculate the average price using $avg.
+
+2. db.orderinfo.find({ price: { $gte: 100, $lte: 1000 } }, { status: 1, _id: 0 })
+→ Finds customers whose price is between 100 and 1000 (inclusive) and displays only their status field while hiding _id.
+
+3. db.orderinfo.find({}, { _id: 0 })
+→ Displays all customer records but removes the _id field from the output using projection.
+
+4. db.orderinfo.createIndex({ cust_name: 1 })
+→ Creates an ascending index on cust_name, which makes searches and sorting by that field faster.
+)

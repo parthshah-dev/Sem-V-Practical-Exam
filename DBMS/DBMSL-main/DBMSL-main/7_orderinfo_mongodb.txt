@@ -1,0 +1,109 @@
+Question:
+Collection “orderinfo” which contains the documents given as below (Perform on Mongo Terminal):
+{
+  cust_id: 123,
+  cust_name: "abc",
+  status: "A",
+  price: 250
+}
+Perform the following operations:
+i. Display the name of the customer having the price between 250 and 450.
+ii. Increment the price by 10 for cust_id: 123 and decrement the price by 5 for cust_id: 124.
+iii. Remove any one of the field from the orderinfo collection.
+iv. Find the name of the customer whose status is either A or price is 250 or both.
+
+=============== 
+Answer
+Step 1: Start Mongo Shell
+mongosh
+
+Step 2: Create or Use Database
+use shopdb
+
+Step 3: Create Collection
+db.createCollection("orderinfo")
+
+Step 4: Insert Documents
+db.orderinfo.insertMany([
+  { cust_id:123, cust_name:"abc", status:"A", price:250 },
+  { cust_id:124, cust_name:"xyz", status:"B", price:300 },
+  { cust_id:125, cust_name:"pqr", status:"A", price:450 }
+])
+
+Step 5: Display All Documents
+db.orderinfo.find()
+
+(i) Display the name of the customer having the price between 250 and 450
+db.orderinfo.find(
+  { price: { $gte:250, $lte:450 } },
+  { cust_name:1, _id:0 }
+)
+
+(ii) Increment and Decrement the Price
+db.orderinfo.updateOne({ cust_id:123 }, { $inc: { price:10 } })
+db.orderinfo.updateOne({ cust_id:124 }, { $inc: { price:-5 } })
+
+(iii) Remove Any One Field (Example: status)
+db.orderinfo.updateMany({}, { $unset: { status:"" } })
+
+(iv) Find Customer Whose Status is “A” or Price is 250 or Both
+db.orderinfo.find(
+  { $or: [ { status:"A" }, { price:250 } ] },
+  { cust_name:1, _id:0 }
+)
+
+---------------
+Practical: Query, Update, and Delete Operations in MongoDB
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It allows fast querying, insertion, and updates using collections instead of tables.
+
+Important Concepts and Syntax:
+1. Insertion:
+Used to add new documents into a collection.
+Syntax:
+db.collection.insertOne({ field1:value1, field2:value2 })
+db.collection.insertMany([{...}, {...}])
+
+2. Display Records:
+Used to view all or selected fields of documents.
+Syntax:
+db.collection.find()
+db.collection.find({}, { field:1, _id:0 })
+
+3. Range Query:
+Retrieves documents whose field values fall within a range.
+Operators: $gt, $lt, $gte, $lte
+Syntax:
+db.collection.find({ price: { $gte:250, $lte:450 } })
+
+4. Update Operation:
+Used to modify existing document fields.
+Syntax:
+db.collection.updateOne({ condition }, { $set:{ field:value } })
+Increment / Decrement:
+Used to increase or decrease numeric values of fields.
+Syntax:
+Increment → db.collection.updateOne({ cust_id:123 }, { $inc:{ price:10 } })
+Decrement → db.collection.updateOne({ cust_id:124 }, { $inc:{ price:-5 } })
+
+5. Delete Operation:
+Removes documents or specific fields from a collection.
+Remove Field:
+db.collection.updateMany({}, { $unset:{ field:"" } })
+Remove Document:
+db.collection.deleteMany({ condition })
+
+6. Logical Operators:
+Used to combine multiple conditions in queries.
+Operators and Syntax:
+$or → db.collection.find({ $or:[ {status:"A"}, {price:250} ] })
+$and → db.collection.find({ $and:[ {status:"A"}, {price:250} ] })
+$not → db.collection.find({ price:{ $not:{ $gt:500 } } })
+$nor → db.collection.find({ $nor:[ {status:"A"}, {price:250} ] })
+
+Explanation:
+Range Queries filter results using numeric boundaries.
+Update with $inc easily modifies numeric fields by adding or subtracting values.
+$unset removes unwanted fields from documents.
+Logical Operators combine multiple conditions for advanced queries.
+--------------------

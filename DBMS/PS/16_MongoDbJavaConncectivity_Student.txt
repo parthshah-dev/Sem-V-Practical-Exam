@@ -1,0 +1,189 @@
+Question 2 – Java and MongoDB Connectivity
+Perform the following operations on Student collection:
+Table: Student(Roll_no, S_name, Semester, Year, No_of_backlogs)
+i. Create a database and student collection.
+ii. Insert documents into the student collection.
+iii. Delete students who have more than 4 backlogs.
+iv. Retrieve the documents based on student Roll_no.
+
+========================== Answer ===========================
+Java + MongoDB (Student Collection) – Stepwise Execution
+Step 1: Open Terminal and Start MongoDB
+# Start MongoDB service (if not already running)
+sudo systemctl start mongod
+# Check status
+sudo systemctl status mongod
+# Enter Mongo Shell
+mongosh
+
+Step 2: Verify Database and Collection (Optional)
+# Show all databases
+show dbs
+# Switch to CollegeDB (it will be created by Java program if not exists)
+use CollegeDB
+# Show collections
+show collections
+# Verify contents of Student collection
+db.Student.find().pretty()
+
+Step 3: Java Program – StudentMongoDB.java
+=========================================================================
+import com.mongodb.client.*;
+import org.bson.Document;
+import java.util.Arrays;
+
+public class StudentMongoDB {
+    public static void main(String[] args) {
+        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+
+            // Step 1: Select/create database
+            MongoDatabase database = mongoClient.getDatabase("CollegeDB");
+            System.out.println("Database CollegeDB selected/created.");
+
+            // Step 2: Select/create collection
+            MongoCollection<Document> collection = database.getCollection("Student");
+            System.out.println("Collection Student selected/created.");
+
+            // Step 3: Insert documents
+            collection.insertMany(Arrays.asList(
+                new Document("Roll_no", 101).append("S_name", "Rahul").append("Semester", 5).append("Year", 2025).append("No_of_backlogs", 2),
+                new Document("Roll_no", 102).append("S_name", "Neha").append("Semester", 3).append("Year", 2025).append("No_of_backlogs", 5),
+                new Document("Roll_no", 103).append("S_name", "Amit").append("Semester", 7).append("Year", 2025).append("No_of_backlogs", 1)
+            ));
+            System.out.println("Inserted 3 student documents.");
+
+            // Step 4: Delete students with backlogs > 4
+            collection.deleteMany(new Document("No_of_backlogs", new Document("$gt", 4)));
+            System.out.println("Deleted students with more than 4 backlogs.");
+
+            // Step 5: Retrieve document by Roll_no
+            Document student = collection.find(new Document("Roll_no", 101)).first();
+            if (student != null) {
+                System.out.println("Student with Roll_no 101: " + student.toJson());
+            } else {
+                System.out.println("Student not found.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+=======================================================================
+Step 4: Compile and Run Java Program
+# Download MongoDB driver if not already
+# Example path: ~/Downloads/mongodb-driver-sync-4.10.2.jar
+# Compile
+javac -cp .:~/Downloads/mongodb-driver-sync-4.10.2.jar StudentMongoDB.java
+
+# Run
+java -cp .:~/Downloads/mongodb-driver-sync-4.10.2.jar StudentMongoDB
+
+Expected Output:
+Database CollegeDB selected/created.
+Collection Student selected/created.
+Inserted 3 student documents.
+Deleted students with more than 4 backlogs.
+Student with Roll_no 101: { "Roll_no": 101, "S_name": "Rahul", "Semester": 5, "Year": 2025, "No_of_backlogs": 2 }
+
+Step 5: Verify Collection in mongosh
+# Start Mongo Shell
+mongosh
+# Switch to CollegeDB
+use CollegeDB
+# Show all collections
+show collections
+# See all students after deletion
+db.Student.find().pretty()
+# Verify specific student
+db.Student.find({Roll_no:101}).pretty()
+
+Expected Results in MongoDB:
+{ "Roll_no": 101, "S_name": "Rahul", "Semester": 5, "Year": 2025, "No_of_backlogs": 2 }
+{ "Roll_no": 103, "S_name": "Amit", "Semester": 7, "Year": 2025, "No_of_backlogs": 1 }
+---------------------------------------------------------------------------
+
+// Installation for Mongodb
+Step 1: Import MongoDB public GPG key
+curl -fsSL https://pgp.mongodb.com/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
+
+Step 2: Create MongoDB list file
+echo "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+
+Step 3: Update packages
+sudo apt update
+
+Step 4: Install MongoDB
+sudo apt install -y mongodb-org
+
+Step 5: Start MongoDB service
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo systemctl status mongod
+
+Step 6: Test MongoDB installation
+mongosh
+If it connects successfully, the MongoDB shell opens.
+
+=======================================//Installation of Driver
+Step 1: Go to Downloads Folder
+cd ~/Downloads
+
+Step 2: Download the MongoDB Java Driver (Sync version)
+wget https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-sync/4.10.2/mongodb-driver-sync-4.10.2.jar
+
+Step 3: Verify the JAR file
+ls -l mongodb-driver-sync-4.10.2.jar
+
+You should see the file in your Downloads folder.
+
+Step 4: Move JAR to a permanent location (optional)
+sudo mv mongodb-driver-sync-4.10.2.jar /usr/share/java/
+
+Step 5: Compile Java Program with MongoDB Driver
+# If your Java program is StudentMongoDB.java
+javac -cp .:/usr/share/java/mongodb-driver-sync-4.10.2.jar StudentMongoDB.java
+
+Step 6: Run Java Program with Driver
+java -cp .:/usr/share/java/mongodb-driver-sync-4.10.2.jar StudentMongoDB
+-------------------------------------------------------------------------
+MongoDB and Java Connectivity – Key Concepts
+1. MongoDB Overview
+MongoDB is a NoSQL, document-oriented database.
+Stores data in BSON format (Binary JSON).
+Collections are analogous to tables; documents are analogous to rows.
+Schema-less: documents in the same collection can have different fields.
+Supports CRUD operations: Create, Read, Update, Delete.
+
+2. Java Connectivity
+Java connects to MongoDB using the MongoDB Java Driver.
+Driver provides classes and methods to perform database operations programmatically.
+Common driver classes:
+MongoClient – establishes connection to MongoDB server.
+MongoDatabase – accesses a database.
+MongoCollection – accesses a collection.
+Document – represents a record/document.
+
+3. Connection Steps in Java
+Add MongoDB Java Driver: Include mongodb-driver-sync JAR in classpath.
+Create MongoClient: MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+Access Database: MongoDatabase db = mongoClient.getDatabase("YourDB");
+Access Collection: MongoCollection<Document> coll = db.getCollection("YourCollection");
+Perform CRUD Operations:
+Insert: coll.insertOne(new Document("field", value));
+Query: coll.find(eq("field", value));
+Update: coll.updateOne(eq("field", value), set("field", newValue));
+Delete: coll.deleteOne(eq("field", value));
+
+4. Advantages of MongoDB + Java
+High scalability: Handles large datasets.
+Flexible schema: No need to predefine tables.
+Ease of integration: Java driver is straightforward to use.
+Supports aggregation and MapReduce: Can perform complex data operations.
+
+5. Practical Notes
+Use try-catch to handle MongoException.
+Close the connection after operations: mongoClient.close();.
+Use filters and projections to efficiently query documents.
+Can integrate with Spring Boot or other frameworks for enterprise applications.
+--------------------------------------------------------------------

@@ -1,0 +1,85 @@
+Question:
+Collection “orderinfo” which contains the documents given as below (Perform on Mongo Terminal)
+{
+  cust_id: 123,
+  cust_name: "abc",
+  status: "A",
+  price: 250
+}
+i. Find the total price for each customer and display in the order of total price.
+ii. Find the distinct customer names.
+iii. Display the “price” of customers whose status is 'A'.
+iv. Delete the customers whose status is 'A'.
+
+===== Answers (MongoDB Commands):
+# Start Mongo Shell
+mongosh
+# Select or create database
+use customerdb
+# Create collection and insert documents
+db.createCollection("orderinfo")
+
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "B", price: 400 },
+  { cust_id: 125, cust_name: "pqr", status: "A", price: 150 },
+  { cust_id: 126, cust_name: "abc", status: "A", price: 100 }
+])
+
+i. Find total price for each customer (ordered by total):
+db.orderinfo.aggregate([
+  { $group: { _id: "$cust_name", total_price: { $sum: "$price" } } },
+  { $sort: { total_price: 1 } }
+])
+db.orderinfo.find()
+
+ii. Find distinct customer names:
+db.orderinfo.distinct("cust_name")
+db.orderinfo.find()
+
+iii. Display price of customers whose status is 'A':
+db.orderinfo.find({ status: "A" }, { price: 1, _id: 0 })
+db.orderinfo.find()
+
+iv. Delete customers whose status is 'A':
+db.orderinfo.deleteMany({ status: "A" })
+db.orderinfo.find()
+
+----------------
+Theory
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It supports fast querying, aggregation, and deletion of documents using collections instead of traditional tables.
+
+Aggregation in MongoDB:
+Aggregation is used to process data records and return computed results. It helps perform operations like sum, average, or count on grouped data.
+
+Syntax:
+db.collection.aggregate([
+  { stage1 },
+  { stage2 }
+])
+
+Concepts Used
+1. $group:
+Groups documents by a field and performs aggregate calculations.
+Syntax: { $group: { _id: "$field", total: { $sum: "$valueField" } } }
+
+2. $sum:
+Used to add numeric values of documents within a group.
+
+3. $sort:
+Arranges the results in ascending (1) or descending (-1) order.
+Syntax: { $sort: { field: 1 } }
+
+4. distinct():
+Returns an array of unique values for a specific field.
+Syntax: db.collection.distinct("field")
+
+5. find():
+Retrieves documents based on conditions or displays the current collection.
+Syntax: db.collection.find({ condition }, { field: 1, _id: 0 })
+
+6. deleteMany():
+Removes all documents that match a specified condition.
+Syntax: db.collection.deleteMany({ condition })
+-------------

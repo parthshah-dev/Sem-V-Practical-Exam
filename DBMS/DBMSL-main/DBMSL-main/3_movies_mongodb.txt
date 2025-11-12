@@ -1,0 +1,87 @@
+Question:
+Collection “movies” which contains the documents given as below (Perform on Mongo Terminal)
+{
+  name: "Movie1",
+  type: "action",
+  budget: 1000000,
+  producer: {
+    name: "producer1",
+    address: "PUNE"
+  }
+}
+i. Find the name of the movie having budget greater than 1,00,000.
+ii. Find the name of producer who lives in Pune.
+iii. Update the type of movie “action” to “horror”.
+iv. Find all the documents produced by name “producer1” with their address.
+
+====== Answer (MongoDB Commands):
+# Open Mongo Shell
+mongosh
+# Create and use database
+use moviedb
+# Insert sample documents
+db.movies.insertMany([
+  { name: "Movie1", type: "action", budget: 1000000, producer: { name: "producer1", address: "PUNE" } },
+  { name: "Movie2", type: "romance", budget: 80000, producer: { name: "producer2", address: "MUMBAI" } },
+  { name: "Movie3", type: "action", budget: 250000, producer: { name: "producer1", address: "PUNE" } }
+])
+
+i. Find the name of the movie having budget greater than 1,00,000
+db.movies.find({ budget: { $gt: 100000 } }, { name: 1, _id: 0 })
+
+ii. Find the name of producer who lives in Pune
+db.movies.find({ "producer.address": "PUNE" }, { "producer.name": 1, _id: 0 })
+
+iii. Update the type of movie “action” to “horror”
+db.movies.updateMany(
+  { type: "action" },
+  { $set: { type: "horror" } }
+)
+
+iv. Find all the documents produced by name “producer1” with their address
+db.movies.find(
+  { "producer.name": "producer1" },
+  { name: 1, "producer.address": 1, _id: 0 }
+)
+
+Exit Mongo Shell
+exit
+
+----------------
+Theory
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It allows high performance, scalability, and easy handling of unstructured or semi-structured data using collections instead of tables.
+
+Querying and Updating in MongoDB:
+MongoDB provides a powerful query language to search and modify documents. Query selectors help filter data based on conditions, while update operators modify specific fields within matched documents.
+Syntax:
+Find Documents:
+db.collection.find({ condition })
+Update Documents:
+db.collection.update({ condition }, { $set: { field: value } })
+
+Concepts Used
+1. Query Selector ($gt):
+Used to match documents where the field value is greater than the specified value.
+Syntax: { field: { $gt: value } }
+
+2. Dot Notation:
+Used to access fields inside embedded documents such as nested objects.
+Syntax: { "embeddedDocument.field": value }
+
+3. Update Operator ($set):
+Used to modify or add new values to existing fields within documents.
+Syntax: { $set: { field: value } }
+
+4. Projection:
+Determines which fields to include or exclude in the query results.
+Syntax: db.collection.find({ condition }, { field: 1, _id: 0 })
+
+5. find() Method:
+Retrieves documents that match specific query conditions.
+Syntax: db.collection.find({ condition })
+
+6. update() Method:
+Modifies one or more documents that meet a given condition using update operators.
+Syntax: db.collection.update({ condition }, { $set: { field: value } })
+---------------

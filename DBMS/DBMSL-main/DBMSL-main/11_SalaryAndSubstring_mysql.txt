@@ -1,0 +1,130 @@
+Question:
+Collection schema (Perform on MySQL Terminal)
+student(S_ID, name, dept_name, tot_cred)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Find the average salary of instructor in those departments where the average salary is more than Rs. 42000/-
+ii. Increase the salary of each instructor in the computer department by 10%
+iii. Find the names of instructors whose names are neither ‘Amol’ nor ‘Amit’
+iv. Find the names of students which contains ‘am’ as its substring
+v. Find the name of students from computer department that “DBMS” courses they take
+
+=============== Answer =======================
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE university;
+USE university;
+
+Step 3: Create Tables
+CREATE TABLE student(
+    S_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    tot_cred INT
+);
+
+CREATE TABLE instructor(
+    T_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course(
+    course_id INT,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+Step 4: Insert Sample Data (Multi-record)
+INSERT INTO instructor VALUES
+(101, 'Amol', 'CSE', 50000),
+(102, 'Amit', 'IT', 45000),
+(103, 'Dr. Mary', 'CSE', 55000),
+(104, 'Dr. John', 'IT', 40000);
+
+INSERT INTO student VALUES
+(1, 'Sam', 'CSE', 120),
+(2, 'Ramesh', 'CSE', 100),
+(3, 'Aman', 'IT', 110),
+(4, 'Priya', 'CSE', 130);
+
+INSERT INTO course VALUES
+(201, 'DBMS', 'CSE', 4),
+(202, 'OS', 'CSE', 3),
+(203, 'Networks', 'IT', 3);
+
+Query Execution and Answers
+i. Average salary in departments where avg > 42000
+SELECT dept_name, AVG(salary) AS avg_salary
+FROM instructor
+GROUP BY dept_name
+HAVING AVG(salary) > 42000;
+
+ii. Increase salary of each instructor in computer department by 10%
+UPDATE instructor
+SET salary = salary * 1.10
+WHERE dept_name = 'CSE';
+
+iii. Names of instructors whose names are neither 'Amol' nor 'Amit'
+SELECT name
+FROM instructor
+WHERE name NOT IN ('Amol', 'Amit');
+
+iv. Names of students containing 'am' as substring
+SELECT name
+FROM student
+WHERE name LIKE '%am%';
+
+v. Names of students from computer department taking DBMS
+SELECT s.name
+FROM student s
+JOIN course c ON s.dept_name = c.dept_name
+WHERE c.title = 'DBMS';
+
+---------------------
+Theory
+What is MySQL
+MySQL is an open-source relational database system that stores structured data in tables and enables data manipulation and retrieval using SQL queries.
+
+Practical Related Concepts
+1. Aggregate Functions with HAVING:
+AVG(), SUM(), MIN(), MAX() calculate summary statistics.
+HAVING filters grouped results.
+Syntax:
+SELECT column, AVG(column2) FROM table GROUP BY column HAVING AVG(column2) > value;
+
+2. UPDATE with Arithmetic:
+Modify numeric fields with calculations, e.g., increment by 10%.
+Syntax:
+UPDATE table SET column = column * 1.10 WHERE condition;
+
+3. NOT IN Clause:
+Filters out multiple unwanted values.
+Syntax:
+SELECT column FROM table WHERE column NOT IN (value1, value2);
+
+4. LIKE Operator with Wildcards:
+% matches any sequence of characters.
+_ matches a single character.
+Syntax:
+SELECT column FROM table WHERE column LIKE '%substring%';
+
+5. JOIN Operation:
+Combines data from two tables based on a related column.
+Syntax:
+SELECT columns FROM table1 JOIN table2 ON table1.column = table2.column;
+
+(
+Explanation
+Aggregate with HAVING allows filtering departments where average salary exceeds 42000.
+UPDATE with arithmetic increases salaries efficiently.
+NOT IN excludes specific instructor names.
+LIKE helps find substrings in student names.
+JOIN connects students to courses to identify which students take DBMS in their department.
+This practical demonstrates aggregation, arithmetic updates, filtering, pattern matching, and table joins in MySQL.
+)

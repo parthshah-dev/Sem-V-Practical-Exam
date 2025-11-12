@@ -1,0 +1,163 @@
+Question 1 – MySQL and Java Connectivity (Two-Tier)
+Perform the following queries:
+i. Create a table of employee details: Employee(SSN, Ename, state, salary)
+ii. Insert records into the Employee table.
+iii. Retrieve the details based on Social Security Number (SSN).
+iv. Update the employee state from 'MH' to 'TN'.
+v. Delete all the employees from 'Gujrat'.
+
+======================== Answer ============================
+
+Step 1: Open Terminal and Start MySQL
+sudo mysql -u root -p
+Enter your MySQL root password when prompted.
+
+Step 2: Create Database
+CREATE DATABASE CompanyDB;
+
+Step 3: Use the Database
+USE CompanyDB;
+
+Step 4: Set / Reset Root Password (Optional, if needed)
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Admin@123';
+FLUSH PRIVILEGES;
+Exit MySQL:
+EXIT;
+
+Step 5: Create Java Program
+Create a file named EmployeeJDBC.java in your desired folder (~/Downloads/):
+=====================================================================
+import java.sql.*;
+
+public class EmployeeJDBC {
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306/CompanyDB";
+        String user = "root";
+        String password = "Admin@123";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
+
+            // 1. Create Employee table
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Employee (" +
+                               "SSN INT PRIMARY KEY, " +
+                               "Ename VARCHAR(50), " +
+                               "State VARCHAR(20), " +
+                               "Salary DOUBLE)");
+
+            // 2. Insert 3 records
+            stmt.executeUpdate("INSERT INTO Employee VALUES (1, 'Rahul', 'MH', 50000)");
+            stmt.executeUpdate("INSERT INTO Employee VALUES (2, 'Amit', 'MH', 45000)");
+            stmt.executeUpdate("INSERT INTO Employee VALUES (3, 'Suresh', 'Gujrat', 40000)");
+
+            System.out.println("Table created and 3 records inserted.");
+
+            // 3. Retrieve employee by SSN=1
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Employee WHERE SSN=1");
+            while (rs.next()) {
+                System.out.println("Employee with SSN=1:");
+                System.out.println(rs.getInt("SSN") + " | " +
+                                   rs.getString("Ename") + " | " +
+                                   rs.getString("State") + " | " +
+                                   rs.getDouble("Salary"));
+            }
+
+            // 4. Update state from 'MH' to 'TN'
+            int updated = stmt.executeUpdate("UPDATE Employee SET State='TN' WHERE State='MH'");
+            System.out.println("Updated state from MH to TN for " + updated + " records.");
+
+            // 5. Delete employees from 'Gujrat'
+            int deleted = stmt.executeUpdate("DELETE FROM Employee WHERE State='Gujrat'");
+            System.out.println("Deleted " + deleted + " employees from Gujrat.");
+
+            System.out.println("All operations completed successfully.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+============================================================================
+Step 6: Compile Java Program
+Open terminal in the folder where EmployeeJDBC.java is saved:
+javac -cp .:/usr/share/java/mysql-connector-j-8.4.0.jar EmployeeJDBC.java
+
+Step 7: Run Java Program
+java -cp .:/usr/share/java/mysql-connector-j-8.4.0.jar EmployeeJDBC
+
+Expected output:
+Table created and 3 records inserted.
+Employee with SSN=1:
+1 | Rahul | MH | 50000.0
+Updated state from MH to TN for 2 records.
+Deleted 1 employees from Gujrat.
+All operations completed successfully.
+
+Step 8: Verify in MySQL
+Login again:
+mysql -u root -p
+USE CompanyDB;
+SELECT * FROM Employee;
+
+You should see:
+SSN	Ename	State	Salary
+1	Rahul	TN	50000
+2	Amit	TN	45000
+--------------------------------------------------------
+(
+Here’s a concise set of commands to solve the “No suitable driver found” or connection errors in Linux when using MySQL with Java:
+1. Download MySQL Connector/J
+cd ~/Downloads
+wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.4.0.tar.gz
+2. Extract the JAR
+tar -xvf mysql-connector-j-8.4.0.tar.gz
+3. Move the JAR to a permanent location
+sudo mv mysql-connector-j-8.4.0/mysql-connector-j-8.4.0.jar /usr/share/java/
+4. Compile Java program with Connector
+cd /path/to/your/java/file
+javac -cp .:/usr/share/java/mysql-connector-j-8.4.0.jar EmployeeJDBC.java
+5. Run Java program with Connector
+java -cp .:/usr/share/java/mysql-connector-j-8.4.0.jar EmployeeJDBC
+6. Check MySQL service status
+sudo systemctl status mysql
+7. Start MySQL service if inactive
+sudo systemctl start mysql
+8. Test MySQL connection
+mysql -u root -p
+Enter your password (e.g., Admin@123) to verify login works.
+)
+
+---------------------------------------------------------------------
+Java and MySQL Connectivity (JDBC) – Key Points
+Definition: JDBC (Java Database Connectivity) is an API that allows Java applications to interact with relational databases like MySQL.
+Purpose: Enables Java programs to perform SQL operations (CREATE, INSERT, UPDATE, DELETE, SELECT).
+
+Architecture:
+Driver Manager: Manages JDBC drivers and database connections.
+Connection: Represents a session with the database.
+Statement / PreparedStatement: Executes SQL queries.
+ResultSet: Stores data retrieved from SELECT queries.
+SQLException: Handles database errors.
+
+Steps to Connect Java with MySQL:
+Load JDBC driver: Class.forName("com.mysql.cj.jdbc.Driver");
+Establish connection: DriverManager.getConnection(url, user, password);
+Create statement: Statement stmt = con.createStatement();
+Execute queries: stmt.executeUpdate() for INSERT/UPDATE/DELETE, stmt.executeQuery() for SELECT.
+Process ResultSet: while(rs.next()) { ... }
+Close resources: rs.close(); stmt.close(); con.close();
+
+Two-Tier Architecture: Java client connects directly to the database server using JDBC.
+
+Advantages:
+Platform-independent database access.
+Supports dynamic SQL execution.
+Easy integration with MySQL and other databases.
+Handles exceptions and errors effectively.
+
+Common Issues & Solutions:
+No suitable driver found: Include MySQL Connector/J JAR in classpath.
+Access denied: Check username, password, and user privileges in MySQL.
+Connection failure: Ensure MySQL server is running.
+
+Use Case: CRUD operations in enterprise applications, student/employee management systems, reporting, and data analysis.

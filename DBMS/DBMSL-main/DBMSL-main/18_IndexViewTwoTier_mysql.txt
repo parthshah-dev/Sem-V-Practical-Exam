@@ -1,0 +1,120 @@
+Question:
+Tables (Perform on MySQL Terminal)
+
+Employee(e_no, e_name, post, pay_rate)
+Position(pos_no, post)
+Duty-alloc(pos_no, e_no, month, year, shift)
+i. Create view that displays first three columns of employee table
+ii. Create view that displays left outer join on Employee and Position tables on post
+iii. Create index on pos_no attribute of Position table
+iv. Based on indexed column, fire queries
+
+===================== Answer =======================
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE company_db;
+USE company_db;
+
+Step 3: Create Tables
+CREATE TABLE Employee(
+    e_no INT PRIMARY KEY,
+    e_name VARCHAR(50),
+    post VARCHAR(50),
+    pay_rate DECIMAL(10,2)
+);
+
+CREATE TABLE Position(
+    pos_no INT PRIMARY KEY,
+    post VARCHAR(50)
+);
+
+CREATE TABLE Duty_alloc(
+    pos_no INT,
+    e_no INT,
+    month VARCHAR(20),
+    year YEAR,
+    shift INT,
+    FOREIGN KEY (pos_no) REFERENCES Position(pos_no),
+    FOREIGN KEY (e_no) REFERENCES Employee(e_no)
+);
+
+Step 4: Insert Sample Data
+INSERT INTO Employee VALUES
+(101, 'Ramesh', 'Manager', 25000),
+(102, 'Suresh', 'Clerk', 18000),
+(103, 'Amit', 'Manager', 30000);
+
+INSERT INTO Position VALUES
+(1, 'Manager'),
+(2, 'Clerk');
+
+INSERT INTO Duty_alloc VALUES
+(1, 101, 'April', 2023, 1),
+(2, 102, 'April', 2023, 1),
+(1, 103, 'April', 2023, 2);
+
+Query Execution and Answers
+i. Create view displaying first three columns of Employee
+CREATE VIEW EmployeeView AS
+SELECT e_no, e_name, post
+FROM Employee;
+
+ii. Create view displaying left outer join on Employee and Position
+CREATE VIEW EmployeePositionView AS
+SELECT e.e_no, e.e_name, e.post, p.pos_no, p.post AS position_post
+FROM Employee e
+LEFT JOIN Position p ON e.post = p.post;
+
+iii. Create index on pos_no in Position table
+CREATE INDEX idx_pos_no ON Position(pos_no);
+
+iv. Queries based on indexed column
+-- Retrieve all positions with pos_no = 1
+SELECT * FROM Position WHERE pos_no = 1;
+
+-- Retrieve all duty allocations for pos_no = 1
+SELECT * FROM Duty_alloc WHERE pos_no = 1;
+
+--------------------------------
+Theory
+What is MySQL
+MySQL is an open-source relational database system for storing and managing structured data using tables, with SQL for querying, aggregation, updating, and indexing.
+
+Practical Related Concepts
+1. Table (DDL)
+Stores structured data in rows and columns.
+Supports primary keys, foreign keys, and constraints.
+Syntax:
+CREATE TABLE table_name(column1 datatype PRIMARY KEY, ...);
+
+2. View
+Virtual table that stores the result of a query.
+Simplifies repeated queries and provides abstraction.
+Syntax:
+CREATE VIEW view_name AS SELECT columns FROM table WHERE condition;
+
+3. Index
+Improves query performance on frequently searched columns.
+Can be simple (single column) or composite (multiple columns).
+Syntax:
+CREATE INDEX index_name ON table(column1, column2);
+
+4. LEFT OUTER JOIN
+Returns all rows from left table and matched rows from right table, NULL if no match.
+Syntax:
+SELECT columns FROM table1 LEFT JOIN table2 ON table1.col = table2.col;
+
+5. Querying Indexed Columns
+Queries on indexed columns are faster because the database uses index structures instead of full table scan.
+--------------------------------
+
+(
+Explanation
+Views reduce repeated query writing and provide focused columns (EmployeeView) or join results (EmployeePositionView).
+Index on pos_no speeds up searching positions and related duty allocations.
+LEFT OUTER JOIN ensures all employees are listed even if no matching position exists.
+Queries on indexed column demonstrate performance benefits of indexing in retrieval.
+)

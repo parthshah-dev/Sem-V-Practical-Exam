@@ -1,0 +1,251 @@
+Question:
+Collection “books” which contains the documents given as below (Perform on Mongo Terminal)
+{
+  name: "understanding JAVA",
+  pages: 400
+}
+- using MapReduce, categorize books into small books and big books, based on the number of pages, and display the total number of books in each category.
+
+=== Practical Solution (Commands):
+# Open Mongo Shell
+mongosh
+# Create and use database
+use bookdb
+# Insert sample documents
+db.books.insertMany([
+  { name: "understanding JAVA", pages: 400 },
+  { name: "Let Us C", pages: 250 },
+  { name: "Python Basics", pages: 300 },
+  { name: "Advanced C++", pages: 550 },
+  { name: "Data Structures", pages: 480 },
+  { name: "Operating System Concepts", pages: 600 },
+  { name: "HTML & CSS", pages: 200 }
+])
+
+1. Define Map and Reduce Functions
+
+var mapBooks = function() {
+  var category;
+  if (this.pages >= 400)
+    category = "Big Books";
+  else
+    category = "Small Books";
+  emit(category, 1);
+};
+var reduceBooks = function(key, values) {
+  return Array.sum(values);
+};
+
+2. Execute MapReduce
+
+db.books.mapReduce(
+  mapBooks,
+  reduceBooks,
+  { out: "book_category" }
+)
+
+3. View Results
+db.book_category.find().pretty()
+
+4. Exit Mongo Shell
+exit
+
+--------------
+Theory:
+
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It allows high performance, scalability, and easy handling of unstructured or semi-structured data using collections instead of tables.
+
+MapReduce in MongoDB:
+MapReduce is a data processing model used to perform aggregation and analysis over large datasets.
+Map phase: Transforms each document and emits key-value pairs.
+Reduce phase: Groups the emitted values by key and performs aggregation.
+Syntax:
+db.collection.mapReduce(
+   mapFunction,
+   reduceFunction,
+   { out: "output_collection" }
+)
+
+Concepts Used:
+1. Map Function:
+The map function reads each document and emits key-value pairs using the emit() method.
+Example:
+if (this.pages >= 400)
+   emit("Big Books", 1);
+else
+   emit("Small Books", 1);
+Here, the key represents the category of the book (Big Books or Small Books), and the value is 1.
+
+2. Reduce Function:
+The reduce function combines all values with the same key and performs aggregation, usually using Array.sum(values) to get the total count of books.
+Example:
+return Array.sum(values);
+
+3. emit() Function:
+emit(key, value) is used inside the map function to send key-value pairs to the reduce phase for grouping and aggregation.
+
+4. Array.sum(values):
+This method sums all numeric values in an array, used in the reduce function to find totals for each key.
+
+5. Output Collection:
+The final MapReduce results are stored in a new collection defined using { out: "collection_name" }.
+In this practical, results are stored in the book_category collection.
+
+6. Categorization Logic:
+Books with 400 or more pages are categorized as Big Books, and those with less than 400 pages as Small Books.
+
+Result:
+Displays the total number of Big Books and Small Books after the MapReduce operation.
+(
+Explanation:
+Books with 400 or more pages → categorized as Big Books
+Books with less than 400 pages → categorized as Small Books
+The result shows how many books fall into each category.
+Main Commands and Explanation
+1. Map Function
+var mapBooks = function() {
+  var category;
+  if (this.pages >= 400)
+    category = "Big Books";
+  else
+    category = "Small Books";
+  emit(category, 1);
+};
+Explanation:
+The map function runs once for every document in the books collection.
+It checks the number of pages for each book.
+If pages ≥ 400 → category = "Big Books", else → "Small Books".
+emit(category, 1) sends a key-value pair to the reducer.
+Key: category (either "Big Books" or "Small Books")
+Value: 1 (represents one book)
+
+2. Reduce Function
+var reduceBooks = function(key, values) {
+  return Array.sum(values);
+};
+Explanation:
+The reduce function groups all emitted values having the same key.
+It adds up all the 1s received for each category.
+So it returns the total number of books per category.
+
+3. MapReduce Execution
+db.books.mapReduce(
+  mapBooks,
+  reduceBooks,
+  { out: "book_category" }
+)
+Explanation:
+Executes the MapReduce process on the books collection.
+mapBooks is the map function and reduceBooks is the reduce function.
+The final output is stored in a new collection named book_category.
+
+4. View Results
+db.book_category.find().pretty()
+Explanation:
+Displays the categorized results in a readable format.
+Each document looks like:
+{ "_id": "Big Books", "value": 3 }
+{ "_id": "Small Books", "value": 4 }
+
+Here,
+_id = key (category)
+value = total number of books in that category
+)
+
+
+
+-----------------------
+If you want to display each book’s name, pages, and its category, you don’t need to count in the reduce phase — instead, you can emit the details directly and collect them.
+Here’s how you can modify your map and reduce functions:
+
+Modified Map and Reduce
+var mapBooks = function() {
+  var category;
+  if (this.pages >= 400)
+    category = "Big Books";
+  else
+    category = "Small Books";
+  emit(category, { name: this.name, pages: this.pages });
+};
+var reduceBooks = function(key, values) {
+  return { books: values }; // groups book details under each category
+};
+
+Run MapReduce
+db.books.mapReduce(
+  mapBooks,
+  reduceBooks,
+  { out: "book_category_details" }
+)
+
+View Results
+db.book_category_details.find().pretty()
+
+Expected Output Format
+{
+  "_id": "Big Books",
+  "value": {
+    "books": [
+      { "name": "understanding JAVA", "pages": 400 },
+      { "name": "Advanced C++", "pages": 550 },
+      { "name": "Operating System Concepts", "pages": 600 }
+    ]
+  }
+}
+{
+  "_id": "Small Books",
+  "value": {
+    "books": [
+      { "name": "Let Us C", "pages": 250 },
+      { "name": "Python Basics", "pages": 300 },
+      { "name": "HTML & CSS", "pages": 200 }
+    ]
+  }
+}
+
+Explanation
+emit(category, { name: this.name, pages: this.pages })
+Key: category ("Big Books" / "Small Books")
+Value: object with each book’s name and pages
+The reduce step collects all books of the same category into one group.
+This way, you’ll see both the category and the list of books with their pages neatly displayed.
+--
+1. How Map and Reduce are connected
+When MongoDB runs MapReduce:
+The map function processes each document in the collection
+Every time emit(key, value) is called, MongoDB stores that key–value pair temporarily.
+Then, it automatically groups all values with the same key and passes them to the reduce function.
+So, MongoDB itself makes the connection — you don’t have to “send” the data manually.
+
+2. What happens in your code
+Map Phase
+emit(category, { name: this.name, pages: this.pages });
+For each book, you emit something like:
+("Big Books", { name: "understanding JAVA", pages: 400 })
+("Big Books", { name: "Advanced C++", pages: 550 })
+("Small Books", { name: "Let Us C", pages: 250 })
+MongoDB groups these by key internally:
+"Big Books"  →  [{name:"understanding JAVA",pages:400}, {name:"Advanced C++",pages:550}]
+"Small Books" → [{name:"Let Us C",pages:250}]
+
+3. Reduce Phase
+var reduceBooks = function(key, values) {
+  return { books: values };
+};
+
+Here:
+key → category ("Big Books", "Small Books", etc.)
+values → array of all value objects emitted for that key (your map data)
+So returning { books: values } means:
+“Wrap the list of all emitted book objects under a single field named books.”
+
+4. How the compiler knows
+MongoDB’s MapReduce engine automatically passes the grouped results from your map function into the reduce function.
+You don’t have to declare or import anything — it’s built into how MapReduce works.
+
+In short:
+emit() sends data → MongoDB stores and groups it by key
+reduce() receives that grouped data → you decide how to combine or display it
+return { books: values } simply packages the list of emitted books together for easy viewing
+------------------

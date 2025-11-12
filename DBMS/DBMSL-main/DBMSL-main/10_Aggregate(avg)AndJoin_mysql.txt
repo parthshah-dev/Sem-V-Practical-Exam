@@ -1,0 +1,146 @@
+Question:
+Collection schema (Perform on MySQL Terminal)
+teaches(T_ID, course_id, sec_id, semester, year)
+section(course_id, sec_id, semester, year, building, room_no)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Display the name of the instructor whose salary is between 30000 and 60000 in descending order.
+ii. Find the average, minimum, maximum salary in each department.
+iii. Display the name of the instructor, his department name, and salary who teaches the course_id: 101.
+iv. Find the name of the instructor whose average salary is greater than 60000.
+
+================= Answer====================
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE university;
+USE university;
+
+Step 3: Create Tables
+CREATE TABLE teaches(
+    T_ID INT,
+    course_id INT,
+    sec_id INT,
+    semester VARCHAR(10),
+    year YEAR
+);
+
+CREATE TABLE section(
+    course_id INT,
+    sec_id INT,
+    semester VARCHAR(10),
+    year YEAR,
+    building VARCHAR(50),
+    room_no INT
+);
+
+CREATE TABLE instructor(
+    T_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course(
+    course_id INT,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+Step 4: Insert Sample Data (Multi-record)
+INSERT INTO instructor VALUES
+(101, 'Dr. Smith', 'CSE', 50000),
+(102, 'Dr. John', 'IT', 45000),
+(103, 'Dr. Mary', 'CSE', 30000),
+(104, 'Dr. Alex', 'ECE', 25000),
+(105, 'Dr. Jane', 'CSE', 65000);
+
+INSERT INTO course VALUES
+(101, 'DBMS', 'CSE', 4),
+(102, 'OS', 'CSE', 3),
+(103, 'Networks', 'IT', 3);
+
+INSERT INTO teaches VALUES
+(101, 101, 1, 'Fall', 2023),
+(102, 102, 1, 'Spring', 2023),
+(103, 103, 1, 'Fall', 2023);
+
+INSERT INTO section VALUES
+(101, 1, 'Fall', 2023, 'Bldg-A', 101),
+(102, 1, 'Spring', 2023, 'Bldg-B', 102),
+(103, 1, 'Fall', 2023, 'Bldg-C', 103);
+
+Query Execution and Answers
+i. Display instructors whose salary is between 30000 and 60000 in descending order
+SELECT name, salary
+FROM instructor
+WHERE salary BETWEEN 30000 AND 60000
+ORDER BY salary DESC;
+
+ii. Find average, minimum, maximum salary in each department
+SELECT dept_name, AVG(salary) AS avg_salary, MIN(salary) AS min_salary, MAX(salary) AS max_salary
+FROM instructor
+GROUP BY dept_name;
+
+iii. Display name, department, salary of instructor who teaches course_id 101
+SELECT i.name, i.dept_name, i.salary
+FROM instructor i
+JOIN teaches t ON i.T_ID = t.T_ID
+WHERE t.course_id = 101;
+
+iv. Find name of instructor whose average salary is greater than 60000
+SELECT name
+FROM instructor
+WHERE salary > 60000;
+
+------------------------
+Theory
+What is MySQL
+MySQL is an open-source relational database management system (RDBMS) used to store structured data in tables and perform operations using SQL queries.
+
+Practical Related Concepts
+1. Range Query using BETWEEN:
+Filters records whose values lie between two specified values.
+Syntax:
+SELECT * FROM table WHERE column BETWEEN value1 AND value2;
+
+2. Aggregate Functions:
+Functions to compute summary statistics:
+AVG() → Average
+MIN() → Minimum
+MAX() → Maximum
+Syntax:
+SELECT AVG(salary), MIN(salary), MAX(salary) FROM table GROUP BY column;
+
+3. JOIN Operation:
+Combines data from multiple tables based on a related column.
+Syntax:
+SELECT columns FROM table1 JOIN table2 ON table1.column = table2.column;
+
+4. ORDER BY Clause:
+Sorts results in ascending (ASC) or descending (DESC) order.
+Syntax:
+SELECT columns FROM table ORDER BY column DESC;
+
+5. Filtering on Single Condition:
+Retrieves rows satisfying a specific condition.
+Syntax:
+SELECT column FROM table WHERE column > value;
+
+6. Grouping (GROUP BY):
+Groups rows sharing the same value of one or more columns for aggregation.
+Syntax:
+SELECT column, AGG_FUNC(column2) FROM table GROUP BY column;
+--------------------------
+(
+Explanation
+Range query (BETWEEN 30000 AND 60000) filters instructors by salary efficiently.
+Aggregate functions compute summary statistics like average, minimum, and maximum salary per department.
+JOIN retrieves instructor details for a particular course.
+ORDER BY DESC displays results in descending order, showing highest-paid first.
+Filtering for salary > 60000 identifies instructors exceeding a threshold.
+This practical demonstrates range queries, aggregation, joins, sorting, and filtering — core SQL operations for structured data management in MySQL.
+)

@@ -1,0 +1,88 @@
+Question:
+Collection “orderinfo” which contains the documents given as below (Perform on Mongo Terminal)
+{
+  cust_id: 123,
+  cust_name: "abc",
+  status: "A",
+  price: 250
+}
+i. Add “Age” field to the orderinfo collection
+ii. Create the complex index on orderinfo collection and fire the queries and drop the duplicates.
+iii. Display the average price for each customer group by status
+iv. Change the customer’s name whose status is “B”
+
+============ 
+Answers (MongoDB Commands):
+# Step 1: Open Mongo Shell
+mongosh
+
+# Step 2: Create and switch to database
+use orderdb
+
+# Step 3: Create collection and insert documents
+db.createCollection("orderinfo")
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "B", price: 350 },
+  { cust_id: 125, cust_name: "pqr", status: "A", price: 400 }
+])
+
+# Step 4: Display all documents
+db.orderinfo.find()
+
+# i. Add “Age” field to the orderinfo collection
+db.orderinfo.updateMany({}, { $set: { Age: 25 } })
+db.orderinfo.find()
+
+# ii. Create the complex (compound) index and drop duplicates if any
+db.orderinfo.createIndex({ cust_name: 1, status: 1 }, { unique: true, dropDups: true })
+db.orderinfo.find()
+
+# iii. Display the average price for each customer grouped by status
+db.orderinfo.aggregate([
+  { $group: { _id: "$status", avg_price: { $avg: "$price" } } }
+])
+db.orderinfo.find()
+
+# iv. Change the customer’s name whose status is “B”
+db.orderinfo.updateMany({ status: "B" }, { $set: { cust_name: "updated_name" } })
+db.orderinfo.find()
+
+----------------
+Theory
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in BSON (Binary JSON) format. It supports fast querying, flexible schema, and high scalability using collections instead of tables.
+
+1. Update Operator ($set):
+Used to add new fields or modify existing ones in documents.
+Syntax:
+db.collection.updateMany({ condition }, { $set: { field: value } })
+
+2. Compound (Complex) Index:
+A compound index includes multiple fields in a single index, allowing faster queries on combined keys.
+Syntax:
+db.collection.createIndex({ field1: 1, field2: 1 })
+Impact:
+Before Index: MongoDB performs a collection scan for queries, which is slower.
+After Index: The database quickly locates documents using the index, improving query performance.
+dropDups: Removes duplicate documents while creating a unique index.
+
+3. Aggregation ($group):
+Groups documents and performs calculations like sum or average on grouped data.
+Syntax:
+db.collection.aggregate([
+  { $group: { _id: "$field", result_field: { $avg: "$target_field" } } }
+])
+
+4. UpdateMany Operation:
+Used to modify multiple documents that match a condition.
+Syntax:
+db.collection.updateMany({ condition }, { $set: { field: value } })
+
+Concepts Used:
+$set → Add or modify fields
+createIndex() → Create compound index
+$avg → Calculate average in aggregation
+$group → Group documents by a field
+updateMany() → Update multiple matching records
+----------------

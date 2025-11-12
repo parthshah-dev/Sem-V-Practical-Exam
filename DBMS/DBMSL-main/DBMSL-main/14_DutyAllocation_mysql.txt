@@ -1,0 +1,140 @@
+Question:
+Collection schema (Perform on MySQL Terminal)
+Empl(e_no, e_name, post, pay_rate)
+Position(pos_no, post)
+Duty-alloc(pos_no, e_no, month, year, shift)
+i. Get duty allocation details for e_no 123 for the first shift in the month of April 2003
+ii. Get the employees whose rate of pay is ≥ rate of pay of employee 'Sachin'
+iii. Create a view for displaying minimum, maximum and average salary for all the posts
+iv. Get a count of different employees on each shift having post ‘manager’
+
+=================== Answer ==================
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE company_duty;
+USE company_duty;
+
+Step 3: Create Tables
+CREATE TABLE Empl(
+    e_no INT,
+    e_name VARCHAR(50),
+    post VARCHAR(50),
+    pay_rate DECIMAL(10,2)
+);
+
+CREATE TABLE Position(
+    pos_no INT,
+    post VARCHAR(50)
+);
+
+CREATE TABLE Duty_alloc(
+    pos_no INT,
+    e_no INT,
+    month VARCHAR(20),
+    year YEAR,
+    shift INT
+);
+
+Step 4: Insert Sample Data (Multi-record)
+INSERT INTO Empl VALUES
+(123, 'Ramesh', 'Manager', 25000),
+(124, 'Sachin', 'Manager', 20000),
+(125, 'Amit', 'Clerk', 15000),
+(126, 'Sonia', 'Manager', 30000);
+
+INSERT INTO Position VALUES
+(1, 'Manager'),
+(2, 'Clerk');
+
+INSERT INTO Duty_alloc VALUES
+(1, 123, 'April', 2003, 1),
+(1, 124, 'April', 2003, 2),
+(2, 125, 'April', 2003, 1),
+(1, 126, 'April', 2003, 1);
+
+Query Execution and Answers
+i. Duty allocation for e_no 123 for first shift in April 2003
+SELECT *
+FROM Duty_alloc
+WHERE e_no = 123 AND month = 'April' AND year = 2003 AND shift = 1;
+
+ii. Employees whose pay_rate ≥ rate of pay of 'Sachin'
+SELECT *
+FROM Empl
+WHERE pay_rate >= (SELECT pay_rate FROM Empl WHERE e_name = 'Sachin');
+
+iii. Create a view for min, max, and avg salary for all posts
+CREATE VIEW PostSalarySummary AS
+SELECT post,
+       MIN(pay_rate) AS min_salary,
+       MAX(pay_rate) AS max_salary,
+       AVG(pay_rate) AS avg_salary
+FROM Empl
+GROUP BY post;
+
+iv. Count of different employees on each shift having post 'Manager'
+SELECT d.shift, COUNT(DISTINCT e.e_no) AS employee_count
+FROM Duty_alloc d
+JOIN Empl e ON d.e_no = e.e_no
+WHERE e.post = 'Manager'
+GROUP BY d.shift;
+
+----------------------------------
+Theory
+What is MySQL
+MySQL is an open-source relational database system for managing structured data with SQL queries. It supports operations like retrieval, aggregation, updating, deletion, and creating views.
+
+Practical Related Concepts
+1. Filtering with WHERE:
+Filters rows based on conditions; can use comparison operators (=, >=, <=) and logical operators (AND, OR).
+Syntax:
+SELECT * FROM table WHERE condition1 AND condition2;
+
+2. Subquery:
+A query inside another query used for comparisons or calculations.
+Syntax:
+SELECT * FROM table WHERE column >= (SELECT column FROM table WHERE condition);
+
+3. JOIN:
+Combines rows from two tables using a related column.
+Syntax:
+SELECT table1.column, table2.column
+FROM table1
+JOIN table2 ON table1.column = table2.column;
+
+4. Aggregate Functions:
+MIN(), MAX(), AVG(), COUNT() compute summary values.
+Syntax:
+SELECT MIN(column), MAX(column), AVG(column), COUNT(column)
+FROM table
+GROUP BY column;
+
+5. VIEW:
+Virtual table storing query results for easy access without repeating query logic.
+Syntax:
+CREATE VIEW view_name AS SELECT columns FROM table WHERE condition;
+
+6. DISTINCT:
+Eliminates duplicate rows in a query result.
+Syntax:
+SELECT DISTINCT column FROM table;
+
+7. GROUP BY:
+Groups rows based on column values for aggregation.
+Syntax:
+SELECT column, COUNT(*) FROM table GROUP BY column;
+
+---------------------------
+(
+Explanation
+WHERE filters duty allocation for a specific employee, month, year, and shift.
+Subquery compares salaries to 'Sachin' for selecting eligible employees.
+JOIN combines Duty_alloc and Empl to count managers per shift.
+Aggregate functions with GROUP BY compute summaries for posts.
+VIEW stores aggregated salary data for repeated use.
+DISTINCT ensures unique employee counts per shift.
+This practical demonstrates filtering, conditional selection, aggregation, grouping, subqueries, and views in MySQL.
+)

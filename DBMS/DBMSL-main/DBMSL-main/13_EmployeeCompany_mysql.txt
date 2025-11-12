@@ -1,0 +1,162 @@
+Question:
+Collection schema (Perform on MySQL Terminal)
+Emp(emp_id, ename, street, city)
+Works(emp_id, c_id, ename, cname, sal)
+Company(c_id, cname, city)
+Manager(mgr_id, mgrname)
+i. Modify the database so that a particular company (e.g., ABC) is now in Pune
+ii. Give all managers of Mbank a 10% raise. If salary is >20,000, give only 3% raise
+iii. Find out the names of all the employees who work in ‘Bosch’ company in city Pune
+iv. Delete all records in the Works table for employees of a particular company (e.g., SBC Company) whose salary >50,000
+
+================ Answer =========================
+Step 1: Start MySQL Terminal
+mysql -u root -p
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE company_db;
+USE company_db;
+
+Step 3: Create Tables
+CREATE TABLE Emp(
+    emp_id INT,
+    ename VARCHAR(50),
+    street VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Works(
+    emp_id INT,
+    c_id INT,
+    ename VARCHAR(50),
+    cname VARCHAR(50),
+    sal DECIMAL(10,2)
+);
+
+CREATE TABLE Company(
+    c_id INT,
+    cname VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Manager(
+    mgr_id INT,
+    mgrname VARCHAR(50),
+    sal DECIMAL(10,2)
+);
+
+Step 4: Insert Sample Data (Multi-record)
+INSERT INTO Emp VALUES
+(1, 'Ramesh', 'Street1', 'Mumbai'),
+(2, 'Suresh', 'Street2', 'Pune'),
+(3, 'Amit', 'Street3', 'Pune');
+
+INSERT INTO Company VALUES
+(101, 'ABC', 'Mumbai'),
+(102, 'Bosch', 'Pune'),
+(103, 'SBC', 'Delhi');
+
+INSERT INTO Works VALUES
+(1, 101, 'Ramesh', 'ABC', 45000),
+(2, 102, 'Suresh', 'Bosch', 30000),
+(3, 103, 'Amit', 'SBC', 60000);
+
+INSERT INTO Manager VALUES
+(201, 'Mr. Sharma', 18000),
+(202, 'Ms. Gupta', 25000);
+
+Query Execution and Answers
+i. Modify the city of company ABC to Pune
+UPDATE Company
+SET city = 'Pune'
+WHERE cname = 'ABC';
+
+ii. Give all managers of Mbank a raise
+UPDATE Manager
+SET sal = CASE
+            WHEN sal > 20000 THEN sal * 1.03
+            ELSE sal * 1.10
+          END
+WHERE mgrname IN (SELECT mgrname FROM Manager WHERE mgrname = 'Mbank');
+
+iii. Find employees who work in ‘Bosch’ in Pune
+SELECT e.ename
+FROM Emp e
+JOIN Works w ON e.emp_id = w.emp_id
+JOIN Company c ON w.c_id = c.c_id
+WHERE c.cname = 'Bosch' AND c.city = 'Pune';
+
+iv. Delete employees of SBC with salary >50,000
+DELETE FROM Works
+WHERE cname = 'SBC' AND sal > 50000;
+
+-----------------------------
+Theory
+What is MySQL
+MySQL is an open-source relational database system for storing structured data in tables and performing queries using SQL for data retrieval, updates, deletion, and aggregation.
+
+Practical Related Concepts
+1. UPDATE Command:
+Modifies existing rows in a table.
+Can use SET column=value and WHERE to filter rows.
+Syntax:
+UPDATE table_name SET column=value WHERE condition;
+
+2. CASE Expression in UPDATE:
+Applies conditional logic for updating based on criteria.
+Syntax:
+UPDATE table SET column = CASE WHEN condition THEN value1 ELSE value2 END WHERE condition;
+
+3. DELETE Command:
+Removes rows from a table based on a condition.
+Syntax:
+DELETE FROM table WHERE condition;
+
+4. JOIN Operation:
+Combines rows from multiple tables based on related columns.
+Syntax:
+SELECT columns FROM table1 JOIN table2 ON table1.column = table2.column WHERE condition;
+
+5. Filtering with WHERE:
+Filters rows based on a condition. Can use AND, OR, comparison operators (=, >, <, >=, <=)
+Syntax:
+SELECT * FROM table WHERE condition; 
+----------------------
+
+(
+Explanation (Updated)
+
+UPDATE command:
+Modifies existing rows in a table. The WHERE clause ensures that only specific rows are affected.
+For example, UPDATE Company SET city='Pune' WHERE cname='ABC'; changes the city of the company ABC to Pune without affecting other companies.
+
+UPDATE with CASE:
+Allows conditional updates in a single query.
+Syntax:
+UPDATE Manager
+SET sal = CASE
+            WHEN sal > 20000 THEN sal * 1.03
+            ELSE sal * 1.10
+          END
+WHERE mgrname IN (SELECT mgrname FROM Manager WHERE mgrname = 'Mbank');
+
+How it executes:
+The query first checks each manager’s salary.
+If sal > 20000, it applies a 3% raise; otherwise, it applies a 10% raise.
+The WHERE ensures only managers of Mbank are affected.
+This prevents multiple separate update queries and applies all conditions in one pass.
+)
+
+DELETE command:
+Removes rows from a table that match a condition. For example, deleting all employees of SBC with salary >50,000 only affects the intended rows.
+
+JOIN operation:
+Combines rows from multiple tables to retrieve related data. For instance, fetching employees who work in Bosch in Pune combines Emp, Works, and Company tables on the employee and company IDs.
+
+WHERE filtering:
+Ensures queries (SELECT, UPDATE, DELETE) affect only the intended rows based on conditions.
+
+Multi-record INSERT:
+Quickly populates tables with multiple rows, which is especially useful for testing queries and practical exercises.
+This practical demonstrates conditional updates, multi-table joins, filtering, and deletion, showing how complex business rules (like conditional salary raises) can be executed efficiently in MySQL.

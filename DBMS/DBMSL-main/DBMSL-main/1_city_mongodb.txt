@@ -1,0 +1,162 @@
+Question:
+Collection “city” which contains the documents given as below (Perform on Mongo Terminal)
+{
+  city: "pune",
+  type: "urban",
+  state: "MH",
+  population: 5600000
+}
+using mapreduce, find statewise population
+using mapreduce, find citywise population
+using mapreduce, find typewise population
+
+===Practical Solution (Commands):
+# Open Mongo Shell
+mongosh
+# Create and use database
+use citydb
+# Insert sample documents
+db.city.insertMany([
+  { city: "pune", type: "urban", state: "MH", population: 5600000 },
+  { city: "mumbai", type: "urban", state: "MH", population: 12500000 },
+  { city: "nagpur", type: "urban", state: "MH", population: 2400000 },
+  { city: "nashik", type: "urban", state: "MH", population: 1800000 },
+  { city: "kolhapur", type: "rural", state: "MH", population: 800000 },
+  { city: "ahmedabad", type: "urban", state: "GJ", population: 6350000 },
+  { city: "rajkot", type: "urban", state: "GJ", population: 1600000 },
+  { city: "vadodara", type: "urban", state: "GJ", population: 2100000 },
+  { city: "junagadh", type: "rural", state: "GJ", population: 500000 }
+])
+
+1. Using MapReduce to find Statewise Population
+var mapState = function() {
+  emit(this.state, this.population);
+};
+var reduceState = function(key, values) {
+  return Array.sum(values);
+};
+db.city.mapReduce(
+  mapState,
+  reduceState,
+  { out: "statewise_population" }
+)
+db.statewise_population.find().pretty()
+
+2. Using MapReduce to find Citywise Population
+var mapCity = function() {
+  emit(this.city, this.population);
+};
+var reduceCity = function(key, values) {
+  return Array.sum(values);
+};
+db.city.mapReduce(
+  mapCity,
+  reduceCity,
+  { out: "citywise_population" }
+)
+db.citywise_population.find().pretty()
+
+3. Using MapReduce to find Typewise Population
+var mapType = function() {
+  emit(this.type, this.population);
+};
+var reduceType = function(key, values) {
+  return Array.sum(values);
+};
+db.city.mapReduce(
+  mapType,
+  reduceType,
+  { out: "typewise_population" }
+)
+db.typewise_population.find().pretty()
+
+4. Exit Mongo Shell
+exit
+
+----
+Theory:
+What is MongoDB:
+MongoDB is an open-source, document-oriented NoSQL database that stores data in a flexible BSON (Binary JSON) format. It allows high performance, scalability, and easy handling of unstructured or semi-structured data using collections instead of tables.
+
+MapReduce in MongoDB:
+MapReduce is a data processing model used to perform aggregation and analysis over large datasets. It works in two main phases:
+Map phase: Transforms each document and emits key-value pairs.
+Reduce phase: Groups the emitted values by key and performs aggregation.
+
+Syntax:
+db.collection.mapReduce(
+   mapFunction,
+   reduceFunction,
+   { out: "output_collection" }
+)
+
+Concepts Used:
+1. Map Function:
+The map function reads each document and emits key-value pairs using the emit() method.
+Example:
+emit(this.state, this.population);
+Here, the key is state and the value is population.
+
+2. Reduce Function:
+The reduce function combines all values with the same key and performs aggregation, often using Array.sum(values) to get the total.
+
+3. emit() Function:
+emit(key, value) is used inside the map function to send data (key-value pair) to the reduce phase for grouping and aggregation.
+
+4. Array.sum(values):
+It sums up all numeric values in an array, commonly used in the reduce function to get total counts or sums.
+
+5. Output Collection:
+The results of the MapReduce process are stored in a new collection defined using { out: "collection_name" }.
+------
+
+(
+Explanation ----
+1. Map Function
+var mapState = function() {
+  emit(this.state, this.population);
+};
+Explanation:
+The map function runs once for every document in the collection.
+this.state → accesses the state field from the current document.
+this.population → accesses the population value.
+emit(key, value) → sends (or "emits") a pair of data to the reducer.
+Here, key = state, value = population.
+Example: for { state: "MH", population: 5600000 }, it emits ("MH", 5600000).
+
+2. Reduce Function
+var reduceState = function(key, values) {
+  return Array.sum(values);
+};
+Explanation:
+The reduce function takes all values with the same key (same state here).
+key → the state name (like "MH").
+values → an array of all populations emitted for that key.
+Array.sum(values) → adds all populations together.
+So it gives total population for each state.
+
+3. MapReduce Command
+db.city.mapReduce(
+  mapState,
+  reduceState,
+  { out: "statewise_population" }
+)
+Explanation:
+This runs the map and reduce functions on the collection city.
+{ out: "statewise_population" } means the final results will be stored in a new collection named statewise_population.
+
+4. Display Results
+db.statewise_population.find().pretty()
+Explanation:
+Shows the results from the output collection in a readable format.
+Example result:
+{ "_id": "MH", "value": 22300000 }
+{ "_id": "GJ", "value": 10500000 }
+Here, _id is the key (state), and value is the total population.
+
+In short:
+Map: breaks data into key-value pairs.
+Emit: sends key-value pairs to reducer.
+Reduce: groups and combines values with the same key.
+Output collection: stores the result.
+)

@@ -1,0 +1,136 @@
+Collection schema (Perform on MySQL Terminal)
+teaches(T_ID, course_id, sec_id, semester, year)
+student(S_ID, name, dept_name, tot_cred)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Find the names of all instructors whose salary is greater than 25000.
+ii. Update Instructor dept_name from CSE to IT.
+iii. Create Simple Index on course table on the attribute dept_name and find out department-wise courses.
+iv. Create a View to retrieve data of instructor with details of course, section, semester, and year he conducted lectures on.
+
+============== Answer
+
+Step 1: Start MySQL Terminal
+mysql -u root -p 
+sudo mysql
+
+Step 2: Create Database and Use
+CREATE DATABASE university;
+USE university;
+
+Step 3: Create Tables
+CREATE TABLE teaches(
+    T_ID INT,
+    course_id INT,
+    sec_id INT,
+    semester VARCHAR(10),
+    year YEAR
+);
+
+CREATE TABLE student(
+    S_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    tot_cred INT
+);
+
+CREATE TABLE instructor(
+    T_ID INT,
+    name VARCHAR(50),
+    dept_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE course(
+    course_id INT,
+    title VARCHAR(50),
+    dept_name VARCHAR(50),
+    credits INT
+);
+
+Step 4: Insert Sample Data (Multi-record)
+INSERT INTO instructor VALUES
+(101, 'Dr. Smith', 'CSE', 50000),
+(102, 'Dr. John', 'CSE', 45000),
+(103, 'Dr. Mary', 'IT', 30000),
+(104, 'Dr. Alex', 'ECE', 20000);
+
+INSERT INTO student VALUES
+(1, 'Alice', 'CSE', 120),
+(2, 'Bob', 'IT', 100),
+(3, 'Charlie', 'ECE', 80);
+
+INSERT INTO course VALUES
+(201, 'DBMS', 'CSE', 4),
+(202, 'OS', 'CSE', 3),
+(203, 'Networks', 'IT', 3),
+(204, 'Electronics', 'ECE', 4);
+
+INSERT INTO teaches VALUES
+(101, 201, 1, 'Fall', 2023),
+(102, 202, 1, 'Spring', 2023),
+(103, 203, 1, 'Fall', 2023);
+
+Query Execution and Answers
+i. Find all instructors whose salary > 25000
+SELECT name FROM instructor
+WHERE salary > 25000;
+
+ii. Update Instructor dept_name from CSE to IT
+UPDATE instructor
+SET dept_name = 'IT'
+WHERE dept_name = 'CSE';
+
+iii. Create Simple Index on course.dept_name and find department-wise courses
+CREATE INDEX idx_deptname ON course(dept_name);
+
+SELECT dept_name, GROUP_CONCAT(title) AS courses
+FROM course
+GROUP BY dept_name;
+
+iv. Create View to retrieve instructor-course details
+CREATE VIEW instructor_course_view AS
+SELECT i.name AS instructor_name, c.title AS course_title, t.sec_id, t.semester, t.year
+FROM instructor i
+JOIN teaches t ON i.T_ID = t.T_ID
+JOIN course c ON t.course_id = c.course_id;
+
+----------------
+Theory -
+What is MySQL
+MySQL is an open-source relational database management system that stores structured data in tables and allows manipulation and querying using SQL commands.
+
+Practical Related Concepts
+1. Index:
+An index improves query performance by allowing faster searches on specified columns.
+Syntax:
+CREATE INDEX index_name ON table_name(column_name);
+
+2. View:
+A view is a virtual table created from a query result. It simplifies queries and controls access.
+Syntax:
+CREATE VIEW view_name AS SELECT column1, column2 FROM table_name JOIN table2 ON condition;
+
+3. SELECT with Condition:
+Retrieve rows based on conditions such as comparison operators (>, <, >=, <=).
+
+4. UPDATE:
+Modifies existing rows in a table.
+Syntax:
+UPDATE table_name SET column=value WHERE condition;
+
+5. GROUP BY & Aggregation:
+Groups rows based on one or more columns. GROUP_CONCAT combines text values from multiple rows.
+Syntax:
+SELECT column, GROUP_CONCAT(column2) FROM table GROUP BY column;
+----------
+
+(
+Explanation
+Salary filter retrieves instructors earning above a certain amount.
+Update operation changes dept_name for selected instructors.
+Indexing improves the efficiency of department-wise course queries.
+View creation (instructor_course_view) combines instructor, course, and semester details for simplified access.
+GROUP BY allows listing all courses department-wise using GROUP_CONCAT.
+This practical demonstrates indexing, views, updates, and filtering operations in MySQL for effective data retrieval and organization.
+)

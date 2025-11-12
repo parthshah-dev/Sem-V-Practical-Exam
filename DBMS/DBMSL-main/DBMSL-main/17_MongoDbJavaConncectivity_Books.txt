@@ -1,0 +1,199 @@
+Use Java and MongoDB connectivity and Write a MapReduce program for categorising books as “Big book” and “Small book” based on number of pages.
+Collection Example:
+Books {
+    Name: "Understanding MongoDB",
+    Pages: 200
+}
+
+Requirement:
+Books with pages > X (e.g., 300) can be "Big book".
+Books with pages ≤ X can be "Small book".
+Use Java MongoDB Driver to implement MapReduce.
+
+========================== Answer =========================
+Step 1: Start MongoDB Service
+# Start MongoDB service
+sudo systemctl start mongod
+# Check status
+sudo systemctl status mongod
+# Enter Mongo shell (optional for verification)
+mongosh
+
+Step 2: Verify Database and Collection (Optional)
+# Show all databases
+show dbs
+# Switch to LibraryDB (will be created by Java if not exists)
+use LibraryDB
+# Show collections
+show collections
+# Verify contents
+db.Books.find().pretty()
+
+Step 3: Java Program – BooksMapReduce.java
+==========================================================================
+import com.mongodb.client.*;
+import org.bson.Document;
+
+public class BooksMapReduce {
+    public static void main(String[] args) {
+        try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+
+            // Step 1: Select/create database
+            MongoDatabase database = mongoClient.getDatabase("LibraryDB");
+            System.out.println("Database LibraryDB selected/created.");
+
+            // Step 2: Select/create collection
+            MongoCollection<Document> collection = database.getCollection("Books");
+            System.out.println("Collection Books selected/created.");
+
+            // Step 3: Insert sample documents
+            collection.insertMany(java.util.Arrays.asList(
+                new Document("Name", "Understanding MongoDB").append("Pages", 200),
+                new Document("Name", "Advanced Java Programming").append("Pages", 450),
+                new Document("Name", "Data Structures").append("Pages", 350),
+                new Document("Name", "Python Basics").append("Pages", 150)
+            ));
+            System.out.println("Inserted sample book documents.");
+
+            // Step 4: Define Map function
+            String map = "function() { " +
+                         "  var category = this.Pages > 300 ? 'Big book' : 'Small book'; " +
+                         "  emit(category, {count: 1}); " +
+                         "}";
+
+            // Step 5: Define Reduce function
+            String reduce = "function(key, values) { " +
+                            "  var total = 0; " +
+                            "  values.forEach(function(v) { total += v.count; }); " +
+                            "  return {count: total}; " +
+                            "}";
+
+            // Step 6: Execute MapReduce
+            MongoIterable<Document> result = collection.mapReduce(map, reduce);
+            System.out.println("MapReduce Results:");
+            for (Document doc : result) {
+                System.out.println(doc.toJson());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+========================================================================
+Step 4: Compile and Run Java Program
+# Download MongoDB driver (if not already)
+# Example: ~/Downloads/mongodb-driver-sync-4.10.2.jar
+# Compile
+javac -cp .:~/Downloads/mongodb-driver-sync-4.10.2.jar BooksMapReduce.java
+# Run
+java -cp .:~/Downloads/mongodb-driver-sync-4.10.2.jar BooksMapReduce
+
+Step 5: Verify MapReduce Result in mongosh
+# Switch to database
+use LibraryDB
+# Check all books
+db.Books.find().pretty()
+# Optional: Use MapReduce in shell
+db.Books.mapReduce(
+   function() { emit(this.Pages > 300 ? "Big book" : "Small book", 1); },
+   function(key, values) { return Array.sum(values); },
+   { out: "book_categories" }
+)
+# Check output collection
+db.book_categories.find().pretty()
+
+
+Expected Output in Java Console
+{ "_id" : "Big book", "value" : { "count" : 2 } }
+{ "_id" : "Small book", "value" : { "count" : 2 } }
+
+---------------------------------------------------------------------------
+
+// Installation for Mongodb
+Step 1: Import MongoDB public GPG key
+curl -fsSL https://pgp.mongodb.com/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
+
+Step 2: Create MongoDB list file
+echo "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+
+Step 3: Update packages
+sudo apt update
+
+Step 4: Install MongoDB
+sudo apt install -y mongodb-org
+
+Step 5: Start MongoDB service
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo systemctl status mongod
+
+Step 6: Test MongoDB installation
+mongosh
+If it connects successfully, the MongoDB shell opens.
+
+=======================================//Installation of Driver
+Step 1: Go to Downloads Folder
+cd ~/Downloads
+
+Step 2: Download the MongoDB Java Driver (Sync version)
+wget https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-sync/4.10.2/mongodb-driver-sync-4.10.2.jar
+
+Step 3: Verify the JAR file
+ls -l mongodb-driver-sync-4.10.2.jar
+
+You should see the file in your Downloads folder.
+
+Step 4: Move JAR to a permanent location (optional)
+sudo mv mongodb-driver-sync-4.10.2.jar /usr/share/java/
+
+Step 5: Compile Java Program with MongoDB Driver
+# If your Java program is StudentMongoDB.java
+javac -cp .:/usr/share/java/mongodb-driver-sync-4.10.2.jar StudentMongoDB.java
+
+Step 6: Run Java Program with Driver
+java -cp .:/usr/share/java/mongodb-driver-sync-4.10.2.jar StudentMongoDB
+-------------------------------------------------------------------------
+MongoDB and Java Connectivity – Books MapReduce Practical
+1. MongoDB Overview
+NoSQL, document-oriented database storing data in BSON (Binary JSON).
+Collections = tables, Documents = rows.
+Schema-less: documents in the same collection can have different fields.
+Supports CRUD operations (Create, Read, Update, Delete) and MapReduce for aggregations.
+
+2. Java Connectivity
+Java connects via MongoDB Java Driver (mongodb-driver-sync).
+Key classes:
+MongoClient – connects to MongoDB server.
+MongoDatabase – accesses a database.
+MongoCollection – accesses a collection.
+Document – represents a record/document.
+
+3. Connection Steps & CRUD in Java
+Include driver JAR in classpath.
+Connect: MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+Select database: MongoDatabase db = mongoClient.getDatabase("LibraryDB");
+Select collection: MongoCollection<Document> coll = db.getCollection("Books");
+Insert: coll.insertOne(new Document("Name","Understanding MongoDB").append("Pages",200));
+Query: coll.find(eq("Name","Understanding MongoDB")).first();
+Update/Delete as needed using updateOne, deleteOne, deleteMany.
+
+4. MapReduce for Books Categorization
+Map function: emits key-value pairs based on pages, e.g.,
+function() {
+  if(this.Pages > 300) emit("Big Book", 1);
+  else emit("Small Book", 1);
+}
+#Reduce function: combines values for the same key, e.g.,
+function(key, values) { return Array.sum(values); }
+#Java execution example:
+books.mapReduce(map, reduce).toCollection();
+Result: counts books in categories “Big Book” and “Small Book”.
+
+5. Advantages & Notes
+High scalability; handles large datasets.
+Flexible schema; no need for predefined tables.
+MapReduce allows aggregation and categorization.
+Close connections after operations: mongoClient.close();.
+Use filters for efficient queries.
+Easily integrates with Java applications and frameworks like Spring Boot.
