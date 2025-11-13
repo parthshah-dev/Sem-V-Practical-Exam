@@ -1,3 +1,17 @@
+Collection “orderinfo” which contains the documents given as below(Perform on Mongo
+Terminal)
+{
+cust_id:123
+cust_name:”abc”
+status:”A”
+price:250
+}
+i. Find the total price for each customer and display in the order of total price.
+ii. Display the average price for each customer group by status
+iii. Create simple index on orderinfo collection.
+iv. Create the complex index on orderinfo collection and fire the queries and drop the
+duplicates.
+
 // =====================================================
 // MongoDB Practical: Order Information Collection
 // =====================================================

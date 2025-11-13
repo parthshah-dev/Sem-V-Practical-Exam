@@ -1,3 +1,17 @@
+(Perform on MYSQL Terminal)
+teaches(T_ID,course_id,sec_id,semester,year)
+student(S_ID,name,dept_name,tot_cred)
+instructor(T_ID,name,dept_name,salary)
+course(course_id,title,dept_name,credits)
+i.Find the total number of instructor who teach a course in the First semester 2010.
+ii.Find the names of all instructors from computer department whose name includes the
+substring „shree‟.
+iii.Find the names of all instructor that have a salary greater than average salary of the
+Civil Department.
+iv. Find the set of all courses taught either in Fifth semester 2014 or in First semester 2010
+or both.
+
+
 -- =====================================================
 -- MySQL Practical: Instructor and Course Management Queries
 -- =====================================================

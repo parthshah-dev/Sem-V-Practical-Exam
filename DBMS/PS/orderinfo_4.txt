@@ -1,3 +1,17 @@
+Collection “orderinfo” which contains the documents given as below(Perform on Mongo
+Terminal)
+{
+cust_id:123
+cust_name:”abc”
+status:”A”
+price:250
+}
+i. Display the name of the customer having the price between 250 and 450
+ii. Increment the price by 10 for cust_id: 123 and decrement the price by 5 for
+cust_id: 124
+iii. Remove any one of the field from the orderinfo collection.
+iv. Find the name of the customer whose status is either A or price is 250 or both.
+
 // =====================================================
 // MongoDB Order Information Example
 // =====================================================

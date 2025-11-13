@@ -1,3 +1,14 @@
+(Perform on MYSQL Terminal)
+teaches(T_ID, course_id, sec_id, semester, year)
+student(S_ID, name, dept_name, tot_cred)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Find the names of the instructor in the university who have taught the courses
+semester wise.
+ii. Create View on single table which retrieves student details.
+iii. Rename the column of table student from dept_name to department_name
+iv. Delete student name whose department is NULL
+
 -- =====================================================
 -- MySQL Practical: University Tables
 -- =====================================================

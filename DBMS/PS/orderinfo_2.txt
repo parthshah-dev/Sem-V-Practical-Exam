@@ -1,3 +1,17 @@
+Collection “orderinfo” which contains the documents given as below(Perform on Mongo
+Terminal)
+{
+cust_id:123
+cust_name:”abc”
+status:”A”
+price:250
+}
+i. find the average price for each customers having status 'A'
+ii. Display the status of the customers whose amount/price lie between 100 and 1000
+iii. Display the customers information without “_id” .
+iv. create a simple index on onderinfo collection and fire the queries. Also explain the impact
+of index before and after.
+
 // =====================================================
 // MongoDB Order Information Example
 // =====================================================

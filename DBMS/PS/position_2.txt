@@ -1,3 +1,11 @@
+Employee(e_no, e_name, post, pay_rate)
+Position(pos_no, post)
+Duty-alloc (pos_no, e_no, month,year, shift)
+i. Create view that displays first three columns of employee table.
+ii. Create view that displays left outer joins on employee and Position tables on post criteria.
+iii. Create index on pos_no attribute of Position table.
+iv. Based on indexed column fire the queries.
+
 -- =====================================================
 -- MySQL Practical: Employee, Position and Duty Allocation Queries
 -- =====================================================

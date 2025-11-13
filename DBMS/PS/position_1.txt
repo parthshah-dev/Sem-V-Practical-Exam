@@ -1,3 +1,15 @@
+(Perform on MYSQL Terminal)
+Empl(e_no, e_name, post, pay_rate)
+Position(pos_no, post)
+Duty-alloc (pos_no, e_no, month,year, shift)
+Implement the following SQL queries
+i. Get duty allocation details for e_no 123 for the first shift in the month of April 2003
+ii. Get the employees whose rate of pay is > or equal rate of pay of employees 'Sachin'.
+iii. Create a view for displaying minimum, maximum and average salary for all the
+posts.
+iv. Get a count of different employees on each shift having post „manager‟.
+
+
 -- =====================================================
 -- MySQL Practical: Employee Duty Allocation Queries
 -- =====================================================

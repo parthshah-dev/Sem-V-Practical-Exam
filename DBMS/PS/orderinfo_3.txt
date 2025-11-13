@@ -1,3 +1,17 @@
+Collection “orderinfo” which contains the documents given as below(Perform on Mongo
+Terminal)
+{
+cust_id:123
+cust_name:”abc”
+status:”A”
+price:250
+}
+i. Add “Age” field to the orderinfo collection
+ii. Create the complex index on orderinfo collection and fire the queries and drop the
+duplicates.
+iii. Display the average price for each customer group by status
+iv. Change the customer‟s name whose status is “B”
+
 // =====================================================
 // MongoDB Order Information Example
 // =====================================================

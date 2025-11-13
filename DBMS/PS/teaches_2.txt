@@ -1,3 +1,15 @@
+(Perform on MYSQL Terminal)
+teaches(T_ID, course_id, sec_id, semester, year)
+student(S_ID, name, dept_name, tot_cred)
+instructor(T_ID, name, dept_name, salary)
+course(course_id, title, dept_name, credits)
+i. Find the names of all instructor whose salary is greater than 25000.
+ii. Update Instructor dept_name from CSE to IT
+iii. Create Simple Index on course table on the attribute dept_name and find out
+department wise courses.
+iv. Create a View to retrieve data of instructor with details of course, section,
+semester and year he conducted lectures on.
+
 -- =====================================================
 -- MySQL Practical: Instructor and Course Details
 -- =====================================================

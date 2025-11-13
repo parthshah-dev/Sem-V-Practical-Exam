@@ -1,3 +1,15 @@
+(Perform on MYSQL Terminal)
+teaches(T_ID,course_id,sec_id,semester,year)
+section(course_id,sec_id,semester,year,building,room_no)
+instructor(T_ID,name, dept_name,salary)
+course(course_id,title,dept_name,credits)
+i. Display the name of the instructor whose salary is between 30000 and 60000 in
+descending order.
+ii. Find the average, minimum, maximum salary in each department.
+iii. Display the name of the instructor, his department name and salary who teaches
+the course_id: 101
+iv. Find the name of the instructor whose average salary in greater then 60000.
+
 -- =====================================================
 -- MySQL Practical: Instructor and Course Management
 -- =====================================================
@@ -101,8 +113,6 @@ HAVING AVG(salary) > 60000;
 -- =====================================================
 -- ✅ END OF PROGRAM
 -- =====================================================
-
-
 
 /*
 
